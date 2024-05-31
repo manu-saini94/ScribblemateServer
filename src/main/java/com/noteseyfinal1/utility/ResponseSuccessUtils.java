@@ -7,5 +7,9 @@ public class ResponseSuccessUtils {
 	public static final String NOTE_FETCHING_SUCCESS = "Notes fetched successfully for user";
 	public static final String NOTE_TRASH_SUCCESS = "Note trashed successfully";
 	public static final String NOTE_DELETE_SUCCESS = "Note deleted successfully";
+	public static final String LABEL_PERSIST_SUCCESS = "Label persisted successfully with following details";
+	public static final String LABEL_UPDATE_SUCCESS = "Label updated successfully with following details";
+	public static final String LABEL_FETCHING_SUCCESS = "Labels fetched successfully for user";
+	public static final String COLLABORATOR_DELETE_SUCCESS = "Collaborator deleted successfully";
 
 }

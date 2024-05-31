@@ -2,6 +2,8 @@ package com.noteseyfinal1.entities;
 
 import java.util.List;
 import java.util.Objects;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,7 +30,7 @@ public class Label extends CommonFields {
 	@Column(name = "label_name")
 	private String labelName;
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "label_note", joinColumns = { @JoinColumn(name = "label_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "note_id") })
 	private List<SpecificNote> noteList;

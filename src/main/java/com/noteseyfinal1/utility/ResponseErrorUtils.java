@@ -14,6 +14,9 @@ public class ResponseErrorUtils {
 	public static final String JWT_SIGNATURE_INVALID = "The JWT signature is invalid";
 	public static final String JWT_TOKEN_EXPIRED = "The JWT token has expired";
 	public static final String INTERNAL_SERVER_ERROR = "Unknown internal server error";
-	public static final Object ERROR_PERSISTING_USER_OR_COLLABORATOR = "Error occurred while persisting user or collaborator";
+	public static final String ERROR_PERSISTING_USER_OR_COLLABORATOR = "Error occurred while persisting user or collaborator";
+	public static final String USER_NOT_FOUND = "User not found";
+	public static final String LABEL_PERSIST_ERROR = "Error occurred while persisting label";
+	public static final String LABEL_NOT_FOUND = "Label not found";
 
 }

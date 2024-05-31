@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.noteseyfinal1.dto.LoginDto;
 import com.noteseyfinal1.dto.RegistrationDto;
 import com.noteseyfinal1.entities.User;
-import com.noteseyfinal1.exceptions.RegistrationException;
+import com.noteseyfinal1.exceptions.users.RegistrationException;
 import com.noteseyfinal1.repositories.UserRepository;
 import com.noteseyfinal1.utility.UserUtils;
 import lombok.extern.slf4j.Slf4j;

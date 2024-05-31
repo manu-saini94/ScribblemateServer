@@ -1,9 +1,14 @@
-package com.noteseyfinal1.exceptions;
+package com.noteseyfinal1.exceptions.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.noteseyfinal1.exceptions.notes.NoteNotFoundException;
+import com.noteseyfinal1.exceptions.notes.NoteNotPersistedException;
+import com.noteseyfinal1.exceptions.notes.NoteNotUpdatedException;
+import com.noteseyfinal1.exceptions.notes.NotesNotFoundException;
 import com.noteseyfinal1.responses.ErrorResponse;
 import com.noteseyfinal1.utility.ResponseErrorUtils;
 

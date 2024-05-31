@@ -38,4 +38,6 @@ public interface SpecificNoteRepository extends JpaRepository<SpecificNote, Inte
 
 	List<SpecificNote> findAllByCommonNote(Note commonNote);
 
+	void deleteByCommonNoteAndUser(Note commonNote, User collaborator);
+
 }

@@ -1,5 +1,10 @@
-package com.noteseyfinal1.exceptions;
+package com.noteseyfinal1.exceptions.notes;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class NoteNotDeletedException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;

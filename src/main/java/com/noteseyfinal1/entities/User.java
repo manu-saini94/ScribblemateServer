@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -65,7 +67,7 @@ public class User implements UserDetails {
 	private List<Note> noteList;
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-	private List<Label> labelList;
+	private Set<Label> labelSet;
 
 	private String profilePicture;
 
@@ -184,7 +186,7 @@ public class User implements UserDetails {
 	public String toString() {
 		return "User [id=" + id + ", fullName=" + fullName + ", email=" + email + ", password=" + password
 				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", specificNoteList=" + specificNoteList
-				+ ", noteList=" + noteList + ", labelList=" + labelList + ", profilePicture=" + profilePicture + "]";
+				+ ", noteList=" + noteList + ", labelSet=" + labelSet + ", profilePicture=" + profilePicture + "]";
 	}
 
 }

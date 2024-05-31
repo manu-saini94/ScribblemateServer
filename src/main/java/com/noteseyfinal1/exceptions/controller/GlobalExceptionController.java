@@ -1,4 +1,4 @@
-package com.noteseyfinal1.exceptions;
+package com.noteseyfinal1.exceptions.controller;
 
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpServerErrorException.InternalServerError;
 
+import com.noteseyfinal1.exceptions.users.RegistrationException;
+import com.noteseyfinal1.exceptions.users.UserNotFoundException;
 import com.noteseyfinal1.utility.ResponseErrorUtils;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -62,6 +64,14 @@ public class GlobalExceptionController {
 		exp.printStackTrace();
 		ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(401), exp.getMessage());
 		errorDetail.setProperty(ResponseErrorUtils.DESCRIPTION, ResponseErrorUtils.ERROR_PERSISTING_USER_OR_COLLABORATOR);
+		return errorDetail;
+	}
+	
+	@ExceptionHandler(value = UserNotFoundException.class)
+	public ProblemDetail userNotFoundException(UserNotFoundException exp) {
+		exp.printStackTrace();
+		ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(401), exp.getMessage());
+		errorDetail.setProperty(ResponseErrorUtils.DESCRIPTION, ResponseErrorUtils.USER_NOT_FOUND);
 		return errorDetail;
 	}
 

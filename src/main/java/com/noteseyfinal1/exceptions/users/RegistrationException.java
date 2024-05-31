@@ -1,4 +1,4 @@
-package com.noteseyfinal1.exceptions;
+package com.noteseyfinal1.exceptions.users;
 
 import lombok.Getter;
 import lombok.Setter;
