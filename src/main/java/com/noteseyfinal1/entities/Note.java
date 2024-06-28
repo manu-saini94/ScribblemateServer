@@ -40,20 +40,20 @@ public class Note extends CommonFields {
 	@ElementCollection(fetch = FetchType.EAGER)
 	private List<String> images;
 
-	@ManyToMany(mappedBy = "noteList", fetch = FetchType.EAGER)
+	@ManyToMany(mappedBy = "noteList", fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	private List<User> collaboratorList;
 
-	@OneToMany(mappedBy = "commonNote", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "commonNote", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private List<SpecificNote> specificNoteList;
 
 	@UpdateTimestamp
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
 
-	@OneToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	private User updatedBy;
 
-	@OneToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	private User createdBy;
 
 }

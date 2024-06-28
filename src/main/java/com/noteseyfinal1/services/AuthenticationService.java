@@ -10,8 +10,11 @@ import com.noteseyfinal1.dto.LoginDto;
 import com.noteseyfinal1.dto.RegistrationDto;
 import com.noteseyfinal1.entities.User;
 import com.noteseyfinal1.exceptions.users.RegistrationException;
+import com.noteseyfinal1.exceptions.users.UserNotFoundException;
 import com.noteseyfinal1.repositories.UserRepository;
 import com.noteseyfinal1.utility.UserUtils;
+import com.noteseyfinal1.utility.Utils.Status;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -25,7 +28,7 @@ public class AuthenticationService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
 //	@Autowired
 //	private CollaboratorRepository collaboratorRepository;
 
@@ -36,11 +39,11 @@ public class AuthenticationService {
 	private AuthenticationManager authenticationManager;
 
 	public User signUp(RegistrationDto input) {
-		User user= null;
+		User user = null;
 //		Collaborator collaborator = null;
 		try {
 			user = new User().setFullName(input.getFullName()).setEmail(input.getEmail())
-					.setPassword(passwordEncoder.encode(input.getPassword()));
+					.setPassword(passwordEncoder.encode(input.getPassword())).setStatus(Status.ACTIVE);
 //			collaborator = new Collaborator();
 //			collaborator.setCollaboratorName(input.getFullName());
 //			collaborator.setEmail(input.getEmail());		
@@ -48,14 +51,14 @@ public class AuthenticationService {
 			return userRepository.save(user);
 		} catch (Exception exp) {
 //			log.error(UserUtils.ERROR_PERSISTING_USER_OR_COLLABORATOR,user,collaborator);
-			throw new RegistrationException();	
+			throw new RegistrationException();
 		}
 	}
 
 	public User authenticate(LoginDto input) {
 		authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(input.getEmail(), input.getPassword()));
-		return userRepository.findByEmail(input.getEmail()).orElseThrow();
+		return userRepository.findByEmail(input.getEmail()).orElseThrow(() -> new UserNotFoundException());
 	}
 
 	public boolean forgot(String email) {

@@ -60,7 +60,7 @@ public class LabelController {
 		User user = userService.getEmailFromJwt(httpRequest);
 		boolean isDeleted = labelService.deleteLabel(labelId, user);
 		return ResponseEntity.ok()
-				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_DELETE_SUCCESS, isDeleted));
+				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.LABEL_DELETE_SUCCESS, isDeleted));
 	}
 
 }

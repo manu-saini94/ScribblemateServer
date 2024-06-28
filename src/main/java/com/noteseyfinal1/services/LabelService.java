@@ -14,6 +14,7 @@ import com.noteseyfinal1.exceptions.labels.LabelNotUpdatedException;
 import com.noteseyfinal1.exceptions.labels.LabelsNotFoundException;
 import com.noteseyfinal1.exceptions.users.UserNotFoundException;
 import com.noteseyfinal1.repositories.LabelRepository;
+import com.noteseyfinal1.repositories.SpecificNoteRepository;
 import com.noteseyfinal1.repositories.UserRepository;
 import com.noteseyfinal1.utility.LabelUtils;
 import jakarta.transaction.Transactional;
@@ -28,6 +29,9 @@ public class LabelService {
 
 	@Autowired
 	private LabelRepository labelRepository;
+
+	@Autowired
+	private SpecificNoteRepository specificNoteRepository;
 
 	@Transactional
 	public LabelDto createNewLabel(LabelDto labelDto, User currentUser) {
@@ -57,7 +61,8 @@ public class LabelService {
 	public boolean deleteLabel(int labelId, User currentUser) {
 		User user = userRepository.findByEmail(currentUser.getEmail()).orElseThrow(() -> new UserNotFoundException());
 		try {
-			labelRepository.deleteByIdAndUser(labelId, user);
+			specificNoteRepository.deleteLabelsFromLabelNote(labelId);
+			labelRepository.deleteByIdAndUser(labelId, user.getId());
 			log.info(LabelUtils.LABEL_DELETE_SUCCESS, labelId);
 			return true;
 		} catch (Exception ex) {

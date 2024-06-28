@@ -38,6 +38,30 @@ public interface SpecificNoteRepository extends JpaRepository<SpecificNote, Inte
 
 	List<SpecificNote> findAllByCommonNote(Note commonNote);
 
-	void deleteByCommonNoteAndUser(Note commonNote, User collaborator);
+	@Transactional
+	@Modifying
+	@Query(value = "DELETE from specific_note WHERE common_note_id = :commonNoteId and user_id = :userId", nativeQuery = true)
+	void deleteByCommonNoteIdAndUserId(@Param("commonNoteId") int commonNoteId, @Param("userId") int userId);
+
+	@Transactional
+	@Modifying
+	@Query(value = "DELETE from note_label WHERE label_id = :labelId", nativeQuery = true)
+	int deleteLabelsFromLabelNote(@Param("labelId") int labelId);
+
+	@Transactional
+	@Modifying
+	@Query(value = "DELETE from note_label WHERE note_id = :noteId", nativeQuery = true)
+	void deleteAllByNoteId(@Param("noteId") int noteId);
+
+	@Transactional
+	@Modifying
+	@Query(value = "DELETE from note_collaborator WHERE user_id = :userId and note_id = :noteId ", nativeQuery = true)
+	void deleteCollaboratorByUserIdAndCommonNoteId(@Param("userId") int userId, @Param("noteId") int noteId);
+
+	@Transactional
+	void deleteByCommonNoteAndUser(Note commonNote, User user);
+
+	@Transactional
+	void deleteAllByUser(User user);
 
 }

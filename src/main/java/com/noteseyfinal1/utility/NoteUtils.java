@@ -18,5 +18,6 @@ public class NoteUtils {
 	public static final String COLLABORATOR_DELETE_SUCCESS = "Successfully deleted the collaborator with id : {}";
 	public static final String LABEL_DELETE_SUCCESS = "Successfully deleted the label with id : {}";
 	public static final String LABEL_DELETE_ERROR = "Error occurred while deleting label with id : {}";
+	public static final String ERROR_DELETING_USER = "Error occurred while deleting user with id : {}";
 
 }

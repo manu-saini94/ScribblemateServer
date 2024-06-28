@@ -18,5 +18,7 @@ public class ResponseErrorUtils {
 	public static final String USER_NOT_FOUND = "User not found";
 	public static final String LABEL_PERSIST_ERROR = "Error occurred while persisting label";
 	public static final String LABEL_NOT_FOUND = "Label not found";
+	public static final Object USER_NOT_DELETED = "User not deleted";
+	public static final Object USER_IS_INACTIVE = "User is Inactive";
 
 }

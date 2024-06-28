@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpServerErrorException.InternalServerError;
 
 import com.noteseyfinal1.exceptions.users.RegistrationException;
+import com.noteseyfinal1.exceptions.users.UserInactiveException;
+import com.noteseyfinal1.exceptions.users.UserNotDeletedException;
 import com.noteseyfinal1.exceptions.users.UserNotFoundException;
 import com.noteseyfinal1.utility.ResponseErrorUtils;
 
@@ -58,20 +60,37 @@ public class GlobalExceptionController {
 		errorDetail.setProperty(ResponseErrorUtils.DESCRIPTION, ResponseErrorUtils.JWT_TOKEN_EXPIRED);
 		return errorDetail;
 	}
-	
+
 	@ExceptionHandler(value = RegistrationException.class)
 	public ProblemDetail registrationException(RegistrationException exp) {
 		exp.printStackTrace();
 		ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(401), exp.getMessage());
-		errorDetail.setProperty(ResponseErrorUtils.DESCRIPTION, ResponseErrorUtils.ERROR_PERSISTING_USER_OR_COLLABORATOR);
+		errorDetail.setProperty(ResponseErrorUtils.DESCRIPTION,
+				ResponseErrorUtils.ERROR_PERSISTING_USER_OR_COLLABORATOR);
 		return errorDetail;
 	}
-	
+
 	@ExceptionHandler(value = UserNotFoundException.class)
 	public ProblemDetail userNotFoundException(UserNotFoundException exp) {
 		exp.printStackTrace();
 		ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(401), exp.getMessage());
 		errorDetail.setProperty(ResponseErrorUtils.DESCRIPTION, ResponseErrorUtils.USER_NOT_FOUND);
+		return errorDetail;
+	}
+
+	@ExceptionHandler(value = UserNotDeletedException.class)
+	public ProblemDetail userNotDeletedException(UserNotDeletedException exp) {
+		exp.printStackTrace();
+		ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(500), exp.getMessage());
+		errorDetail.setProperty(ResponseErrorUtils.DESCRIPTION, ResponseErrorUtils.USER_NOT_DELETED);
+		return errorDetail;
+	}
+
+	@ExceptionHandler(value = UserInactiveException.class)
+	public ProblemDetail userInactiveException(UserInactiveException exp) {
+		exp.printStackTrace();
+		ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exp.getMessage());
+		errorDetail.setProperty(ResponseErrorUtils.DESCRIPTION, ResponseErrorUtils.USER_IS_INACTIVE);
 		return errorDetail;
 	}
 

@@ -10,8 +10,15 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.noteseyfinal1.utility.Utils.Role;
+import com.noteseyfinal1.utility.Utils.Status;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -50,6 +57,10 @@ public class User implements UserDetails {
 	@Column(nullable = false)
 	private String password;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status")
+	private Status status;
+
 	@CreationTimestamp
 	@Column(updatable = false, name = "created_at")
 	private LocalDateTime createdAt;
@@ -58,16 +69,22 @@ public class User implements UserDetails {
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE }, orphanRemoval = true)
 	private List<SpecificNote> specificNoteList;
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
 	@JoinTable(name = "note_collaborator", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "note_id") })
 	private List<Note> noteList;
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE }, orphanRemoval = true)
 	private Set<Label> labelSet;
+
+	@OneToMany(mappedBy = "updatedBy", fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE }, orphanRemoval = true)
+	private List<Note> updatedByNoteList;
+
+	@OneToMany(mappedBy = "createdBy", fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE }, orphanRemoval = true)
+	private List<Note> createdByNoteList;
 
 	private String profilePicture;
 
@@ -163,6 +180,15 @@ public class User implements UserDetails {
 
 	public User() {
 		super();
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public User setStatus(Status status) {
+		this.status = status;
+		return this;
 	}
 
 	@Override

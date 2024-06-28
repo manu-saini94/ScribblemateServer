@@ -30,9 +30,8 @@ public class Label extends CommonFields {
 	@Column(name = "label_name")
 	private String labelName;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinTable(name = "label_note", joinColumns = { @JoinColumn(name = "label_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "note_id") })
+	@ManyToMany(mappedBy = "labelSet", fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE,
+			CascadeType.REMOVE })
 	private List<SpecificNote> noteList;
 
 	@ManyToOne(fetch = FetchType.EAGER)

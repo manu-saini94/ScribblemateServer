@@ -22,6 +22,19 @@ public class Utils {
 		}
 	}
 
+	public enum Status {
+		ACTIVE, INACTIVE;
+
+		public static Status findByName(String name) {
+			for (Status status : values()) {
+				if (status.name().equalsIgnoreCase(name)) {
+					return status;
+				}
+			}
+			return null;
+		}
+	}
+
 	public static String formatSafe(String format, Object... args) {
 		try {
 			return String.format(format, args);

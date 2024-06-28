@@ -57,6 +57,17 @@ public class NoteController {
 		return ResponseEntity.ok()
 				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_UPDATE_SUCCESS, note));
 	}
+	
+	@PostMapping("/add/new/label")
+	public ResponseEntity<SuccessResponse> addNewLabelAndAddToNote(@RequestBody LabelDto labelDto,
+			@RequestParam("id") int noteId, HttpServletRequest httpRequest) {
+		User user = userService.getEmailFromJwt(httpRequest);
+		NoteDto note = noteService.addNewLabelToNote(user, noteId, labelDto);
+		return ResponseEntity.ok()
+				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_UPDATE_SUCCESS, note));
+	}
+	
+	
 
 	@GetMapping("/get")
 	public ResponseEntity<SuccessResponse> getAllEssentialNotes(HttpServletRequest httpRequest) {
@@ -147,8 +158,8 @@ public class NoteController {
 			HttpServletRequest httpRequest) {
 		User user = userService.getEmailFromJwt(httpRequest);
 		boolean isDeleted = noteService.deleteNoteByUserAndId(user, noteId);
-		return ResponseEntity.ok().body(new SuccessResponse(HttpStatus.OK.value(),
-				ResponseSuccessUtils.COLLABORATOR_DELETE_SUCCESS, isDeleted));
+		return ResponseEntity.ok()
+				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_DELETE_SUCCESS, isDeleted));
 	}
 
 	@DeleteMapping("/delete/label")

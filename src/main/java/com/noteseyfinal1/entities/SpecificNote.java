@@ -6,11 +6,15 @@ import java.util.Set;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.noteseyfinal1.utility.Utils.Role;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -51,7 +55,9 @@ public class SpecificNote extends CommonFields {
 	@ManyToOne(fetch = FetchType.EAGER)
 	private User user;
 
-	@ManyToMany(mappedBy = "noteList", fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+	@JoinTable(name = "note_label", joinColumns = { @JoinColumn(name = "note_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "label_id") })
 	private Set<Label> labelSet;
 
 	@ManyToOne
