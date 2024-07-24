@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping("/note")
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class NoteController {
 
 	@Autowired
@@ -57,7 +59,7 @@ public class NoteController {
 		return ResponseEntity.ok()
 				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_UPDATE_SUCCESS, note));
 	}
-	
+
 	@PostMapping("/add/new/label")
 	public ResponseEntity<SuccessResponse> addNewLabelAndAddToNote(@RequestBody LabelDto labelDto,
 			@RequestParam("id") int noteId, HttpServletRequest httpRequest) {
@@ -66,9 +68,8 @@ public class NoteController {
 		return ResponseEntity.ok()
 				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_UPDATE_SUCCESS, note));
 	}
-	
-	
 
+	
 	@GetMapping("/get")
 	public ResponseEntity<SuccessResponse> getAllEssentialNotes(HttpServletRequest httpRequest) {
 		User user = userService.getEmailFromJwt(httpRequest);

@@ -18,7 +18,7 @@ import com.noteseyfinal1.utility.Utils.Status;
 
 @RequestMapping("/auth")
 @RestController
-
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AuthenticationController {
 	private final JwtAuthenticationService jwtService;
 

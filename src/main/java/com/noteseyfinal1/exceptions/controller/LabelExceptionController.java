@@ -19,7 +19,7 @@ public class LabelExceptionController {
 	@ExceptionHandler(value = LabelNotFoundException.class)
 	public ResponseEntity<ErrorResponse> labelNotFoundException(LabelNotFoundException exp) {
 		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(),
-				ResponseErrorUtils.LABEL_NOT_FOUND);
+				ResponseErrorUtils.LABEL_NOT_FOUND);		
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
 	}
 

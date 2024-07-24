@@ -10,6 +10,7 @@ import com.noteseyfinal1.dto.LoginDto;
 import com.noteseyfinal1.dto.RegistrationDto;
 import com.noteseyfinal1.entities.User;
 import com.noteseyfinal1.exceptions.users.RegistrationException;
+import com.noteseyfinal1.exceptions.users.UserAlreadyExistException;
 import com.noteseyfinal1.exceptions.users.UserNotFoundException;
 import com.noteseyfinal1.repositories.UserRepository;
 import com.noteseyfinal1.utility.UserUtils;
@@ -39,7 +40,9 @@ public class AuthenticationService {
 	private AuthenticationManager authenticationManager;
 
 	public User signUp(RegistrationDto input) {
-		User user = null;
+		User user = userRepository.findByEmail(input.getEmail()).get();
+		if(user!=null)
+			throw new UserAlreadyExistException();
 //		Collaborator collaborator = null;
 		try {
 			user = new User().setFullName(input.getFullName()).setEmail(input.getEmail())
