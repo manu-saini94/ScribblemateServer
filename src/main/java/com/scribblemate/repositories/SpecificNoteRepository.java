@@ -18,7 +18,7 @@ public interface SpecificNoteRepository extends JpaRepository<SpecificNote, Inte
 
 	SpecificNote findByIdAndUser(Integer id, User user);
 
-	List<SpecificNote> findAllByUserAndIsTrashedFalseAndIsArchivedFalse(User user);
+	List<SpecificNote> findAllByUserAndIsTrashedFalseAndIsArchivedFalseOrderByCommonNoteCreatedAtDesc(User user);
 
 	SpecificNote findByCommonNoteAndUser(Note note, User collaborator);
 
