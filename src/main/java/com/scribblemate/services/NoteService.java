@@ -230,7 +230,7 @@ public class NoteService {
 
 	public List<NoteDto> getAllNotesByUser(User user) {
 		try {
-			List<SpecificNote> noteList = specificNoteRepository.findAllByUserAndIsTrashedFalseAndIsArchivedFalse(user);
+			List<SpecificNote> noteList = specificNoteRepository.findAllByUserAndIsTrashedFalseAndIsArchivedFalseOrderByCommonNoteCreatedAtDesc(user);
 			List<NoteDto> noteDtoList = getNoteDtoFromNoteList(noteList, user);
 			return noteDtoList;
 		} catch (Exception exp) {
