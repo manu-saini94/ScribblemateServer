@@ -16,7 +16,7 @@ public interface LabelRepository extends JpaRepository<Label, Integer> {
 
 	Label findByIdAndUser(Integer id, User user);
 
-	List<Label> findAllByUser(User user);
+	List<Label> findAllByUserOrderByLabelName(User user);
 
 	@Transactional
 	@Modifying

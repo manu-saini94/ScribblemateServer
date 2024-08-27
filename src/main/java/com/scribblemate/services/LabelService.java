@@ -92,7 +92,7 @@ public class LabelService {
 	public List<LabelDto> getLabelsByUser(User currentUser) {
 		User user = userRepository.findByEmail(currentUser.getEmail()).orElseThrow(() -> new UserNotFoundException());
 		try {
-			List<Label> labelList = labelRepository.findAllByUser(user);
+			List<Label> labelList = labelRepository.findAllByUserOrderByLabelName(user);
 			List<LabelDto> labelDtoList = labelList.stream().map(label -> {
 				return getLabelDtoFromLabel(label);
 			}).toList();
