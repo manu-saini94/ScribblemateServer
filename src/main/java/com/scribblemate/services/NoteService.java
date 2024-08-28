@@ -239,11 +239,20 @@ public class NoteService {
 
 		}
 	}
+	
+	public List<NoteDto> getAllNotesWithLabelsByUser(User user) {
+		// TODO Auto-generated method stub
+		List<NoteDto> noteDtoList = getAllNotesByUser(user);
+		List<NoteDto> notesWithLabels = noteDtoList.stream().filter(noteDto -> {
+			return !noteDto.getLabelSet().isEmpty() ;
+		}).collect(Collectors.toList());
+		return notesWithLabels;
+	}
 
 	public List<NoteDto> getAllNotesByUserAndLabelId(User user, int labelId) {
 		try {
 			Label label = labelRepository.findById(labelId).get();
-			List<SpecificNote> noteList = specificNoteRepository.findByUserAndLabel(user, label);
+			List<SpecificNote> noteList = specificNoteRepository.findByUserAndLabelOrderByCommonNoteCreatedAtDesc(user, label);
 			List<NoteDto> noteDtoList = getNoteDtoFromNoteList(noteList, user);
 			return noteDtoList;
 		} catch (Exception exp) {
@@ -254,7 +263,7 @@ public class NoteService {
 
 	public List<NoteDto> getAllNotesByIsTrashed(User user) {
 		try {
-			List<SpecificNote> noteList = specificNoteRepository.findAllByUserAndIsTrashedTrue(user);
+			List<SpecificNote> noteList = specificNoteRepository.findAllByUserAndIsTrashedTrueOrderByUpdatedAtDesc(user);
 			List<NoteDto> noteDtoList = getNoteDtoFromNoteList(noteList, user);
 			return noteDtoList;
 		} catch (Exception exp) {
@@ -265,7 +274,7 @@ public class NoteService {
 
 	public List<NoteDto> getAllNotesByIsArchived(User user) {
 		try {
-			List<SpecificNote> noteList = specificNoteRepository.findAllByUserAndIsArchivedTrue(user);
+			List<SpecificNote> noteList = specificNoteRepository.findAllByUserAndIsArchivedTrueOrderByCommonNoteCreatedAtDesc(user);
 			List<NoteDto> noteDtoList = getNoteDtoFromNoteList(noteList, user);
 			return noteDtoList;
 		} catch (Exception exp) {
@@ -276,7 +285,7 @@ public class NoteService {
 
 	public List<NoteDto> getAllNotesByReminder(User user) {
 		try {
-			List<SpecificNote> noteList = specificNoteRepository.findAllByUserAndReminderNotNull(user);
+			List<SpecificNote> noteList = specificNoteRepository.findAllByUserAndReminderNotNullOrderByCommonNoteCreatedAtDesc(user);
 			List<NoteDto> noteDtoList = getNoteDtoFromNoteList(noteList, user);
 			return noteDtoList;
 		} catch (Exception exp) {
@@ -284,6 +293,9 @@ public class NoteService {
 			throw new NoteNotFoundException(exp.getMessage());
 		}
 	}
+	
+	
+
 
 	public NoteDto pinNote(User user, int noteId) {
 		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
@@ -549,4 +561,5 @@ public class NoteService {
 		return updatedNote;
 	}
 
+	
 }

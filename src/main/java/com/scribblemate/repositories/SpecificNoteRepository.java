@@ -23,18 +23,18 @@ public interface SpecificNoteRepository extends JpaRepository<SpecificNote, Inte
 	SpecificNote findByCommonNoteAndUser(Note note, User collaborator);
 
 	@Query("SELECT sn FROM SpecificNote sn JOIN sn.labelSet ls WHERE sn.user = :user AND ls = :label")
-	List<SpecificNote> findByUserAndLabel(@Param("user") User user, @Param("label") Label label);
+	List<SpecificNote> findByUserAndLabelOrderByCommonNoteCreatedAtDesc(@Param("user") User user, @Param("label") Label label);
 
 	@Transactional
 	@Modifying
 	@Query("UPDATE SpecificNote sn SET sn.isPinned = :isPinned WHERE sn.commonNote.id = :noteId AND sn.user = :user")
 	int updatePinStatus(@Param("isPinned") boolean isPinned, @Param("noteId") Integer noteId, @Param("user") User user);
 
-	List<SpecificNote> findAllByUserAndIsTrashedTrue(User user);
+	List<SpecificNote> findAllByUserAndIsTrashedTrueOrderByUpdatedAtDesc(User user);
 
-	List<SpecificNote> findAllByUserAndIsArchivedTrue(User user);
+	List<SpecificNote> findAllByUserAndIsArchivedTrueOrderByCommonNoteCreatedAtDesc(User user);
 
-	List<SpecificNote> findAllByUserAndReminderNotNull(User user);
+	List<SpecificNote> findAllByUserAndReminderNotNullOrderByCommonNoteCreatedAtDesc(User user);
 
 	List<SpecificNote> findAllByCommonNote(Note commonNote);
 
