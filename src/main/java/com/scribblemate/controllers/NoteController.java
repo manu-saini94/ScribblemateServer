@@ -88,6 +88,15 @@ public class NoteController {
 		return ResponseEntity.ok().body(
 				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_FETCHING_SUCCESS, notesList));
 	}
+	
+	@GetMapping("/get/label/all")
+	public ResponseEntity<SuccessResponse> getAllNotesWithLabels(
+			HttpServletRequest httpRequest) {
+		User user = userService.getEmailFromJwt(httpRequest);
+		List<NoteDto> notesList = noteService.getAllNotesWithLabelsByUser(user);
+		return ResponseEntity.ok().body(
+				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_FETCHING_SUCCESS, notesList));
+	}
 
 	@GetMapping("/get/trash")
 	public ResponseEntity<SuccessResponse> getAllTrashedNotes(HttpServletRequest httpRequest) {
