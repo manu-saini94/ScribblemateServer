@@ -15,29 +15,29 @@ import com.scribblemate.utility.ResponseErrorUtils;
 @RestControllerAdvice
 public class NoteExceptionController {
 
-	@ExceptionHandler(value = NoteNotFoundException.class)
-	public ResponseEntity<ErrorResponse> noteNotFoundException(NoteNotFoundException exp) {
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(),
-				ResponseErrorUtils.NOTE_NOT_FOUND);
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-	}
-	@ExceptionHandler(value = NotesNotFoundException.class)
-	public ResponseEntity<ErrorResponse> notesNotFoundException(NotesNotFoundException exp) {
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(),
-				ResponseErrorUtils.NOTE_NOT_FOUND);
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-	}
+	   @ExceptionHandler(value = NoteNotFoundException.class)
+	    public ResponseEntity<ErrorResponse> noteNotFoundException(NoteNotFoundException exp) {
+	        return buildErrorResponse(HttpStatus.NOT_FOUND, ResponseErrorUtils.NOTE_NOT_FOUND, exp.getMessage());
+	    }
 
-	@ExceptionHandler(value = NoteNotPersistedException.class)
-	public ResponseEntity<ErrorResponse> noteNotPersistedException(NoteNotPersistedException exp) {
-		return ResponseEntity.badRequest().body(
-				new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ResponseErrorUtils.NOTE_PERSIST_ERROR));
-	}
+	    @ExceptionHandler(value = NotesNotFoundException.class)
+	    public ResponseEntity<ErrorResponse> notesNotFoundException(NotesNotFoundException exp) {
+	        return buildErrorResponse(HttpStatus.NOT_FOUND, ResponseErrorUtils.NOTES_NOT_FOUND, exp.getMessage());
+	    }
 
-	@ExceptionHandler(value = NoteNotUpdatedException.class)
-	public ResponseEntity<ErrorResponse> noteNotUpdatedException(NoteNotUpdatedException exp) {
-		return ResponseEntity.badRequest().body(
-				new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ResponseErrorUtils.NOTE_UPDATE_ERROR));
-	}
+	    @ExceptionHandler(value = NoteNotPersistedException.class)
+	    public ResponseEntity<ErrorResponse> noteNotPersistedException(NoteNotPersistedException exp) {
+	        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ResponseErrorUtils.NOTE_PERSIST_ERROR, exp.getMessage());
+	    }
+
+	    @ExceptionHandler(value = NoteNotUpdatedException.class)
+	    public ResponseEntity<ErrorResponse> noteNotUpdatedException(NoteNotUpdatedException exp) {
+	        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ResponseErrorUtils.NOTE_UPDATE_ERROR, exp.getMessage());
+	    }
+
+	    private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, ResponseErrorUtils error, String message) {
+			ErrorResponse errorResponse = new ErrorResponse(status.value(), error.name(), message);
+			return ResponseEntity.status(status).body(errorResponse);
+		}
 
 }

@@ -17,6 +17,7 @@ import com.scribblemate.entities.SpecificNote;
 import com.scribblemate.entities.User;
 import com.scribblemate.exceptions.labels.LabelNotDeletedException;
 import com.scribblemate.exceptions.labels.LabelNotFoundException;
+import com.scribblemate.exceptions.notes.CollaboratorNotDeletedException;
 import com.scribblemate.exceptions.notes.NoteNotDeletedException;
 import com.scribblemate.exceptions.notes.NoteNotFoundException;
 import com.scribblemate.exceptions.notes.NoteNotPersistedException;

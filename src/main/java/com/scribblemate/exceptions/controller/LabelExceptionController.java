@@ -16,38 +16,37 @@ import com.scribblemate.utility.ResponseErrorUtils;
 @RestControllerAdvice
 public class LabelExceptionController {
 
+	private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, ResponseErrorUtils error,
+			String message) {
+		ErrorResponse errorResponse = new ErrorResponse(status.value(), error.name(), message);
+		return ResponseEntity.status(status).body(errorResponse);
+	}
+
 	@ExceptionHandler(value = LabelNotFoundException.class)
-	public ResponseEntity<ErrorResponse> labelNotFoundException(LabelNotFoundException exp) {
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(),
-				ResponseErrorUtils.LABEL_NOT_FOUND);		
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+	public ResponseEntity<ErrorResponse> handleLabelNotFoundException(LabelNotFoundException exp) {
+		return buildErrorResponse(HttpStatus.NOT_FOUND, ResponseErrorUtils.LABELS_NOT_FOUND, exp.getMessage());
 	}
 
 	@ExceptionHandler(value = LabelsNotFoundException.class)
-	public ResponseEntity<ErrorResponse> labelsNotFoundException(LabelsNotFoundException exp) {
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(),
-				ResponseErrorUtils.LABEL_NOT_FOUND);
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+	public ResponseEntity<ErrorResponse> handleLabelsNotFoundException(LabelsNotFoundException exp) {
+		return buildErrorResponse(HttpStatus.NOT_FOUND, ResponseErrorUtils.LABELS_NOT_FOUND, exp.getMessage());
 	}
 
 	@ExceptionHandler(value = LabelNotPersistedException.class)
-	public ResponseEntity<ErrorResponse> labelNotPersistedException(LabelNotPersistedException exp) {
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-				ResponseErrorUtils.LABEL_PERSIST_ERROR);
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+	public ResponseEntity<ErrorResponse> handleLabelNotPersistedException(LabelNotPersistedException exp) {
+		return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ResponseErrorUtils.LABEL_PERSIST_ERROR,
+				exp.getMessage());
 	}
 
 	@ExceptionHandler(value = LabelNotDeletedException.class)
-	public ResponseEntity<ErrorResponse> labelNotDeletedException(LabelNotDeletedException exp) {
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-				ResponseErrorUtils.LABEL_PERSIST_ERROR);
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+	public ResponseEntity<ErrorResponse> handleLabelNotDeletedException(LabelNotDeletedException exp) {
+		return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ResponseErrorUtils.LABEL_DELETE_ERROR,
+				exp.getMessage());
 	}
 
 	@ExceptionHandler(value = LabelNotUpdatedException.class)
-	public ResponseEntity<ErrorResponse> labelNotUpdatedException(LabelNotUpdatedException exp) {
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-				ResponseErrorUtils.LABEL_PERSIST_ERROR);
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+	public ResponseEntity<ErrorResponse> handleLabelNotUpdatedException(LabelNotUpdatedException exp) {
+		return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ResponseErrorUtils.LABEL_UPDATE_ERROR,
+				exp.getMessage());
 	}
 }
