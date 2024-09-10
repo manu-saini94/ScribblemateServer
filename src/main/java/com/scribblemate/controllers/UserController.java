@@ -21,7 +21,7 @@ import com.scribblemate.utility.ResponseSuccessUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserController {
@@ -32,22 +32,19 @@ public class UserController {
 	@GetMapping("/me")
 	public ResponseEntity<User> authenticatedUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
 		User currentUser = (User) authentication.getPrincipal();
-
 		return ResponseEntity.ok(currentUser);
 	}
 
 	@GetMapping("/")
 	public ResponseEntity<List<User>> allUsers() {
 		List<User> users = userService.allUsers();
-
 		return ResponseEntity.ok(users);
 	}
 
 	@DeleteMapping("/delete")
 	public ResponseEntity<SuccessResponse> deleteUser(HttpServletRequest httpRequest) {
-		User user = userService.getEmailFromJwt(httpRequest);
+		User user = userService.getUserFromHttpRequest(httpRequest);
 		boolean isDeleted = userService.deleteUser(user);
 		return ResponseEntity.ok()
 				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.USER_DELETE_SUCCESS, isDeleted));
