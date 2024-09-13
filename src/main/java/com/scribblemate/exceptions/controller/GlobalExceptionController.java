@@ -7,9 +7,6 @@ import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import com.scribblemate.exceptions.users.RefreshTokenExpiredException;
-import com.scribblemate.exceptions.users.RefreshTokenMissingOrInvalidException;
 import com.scribblemate.exceptions.users.RegistrationException;
 import com.scribblemate.exceptions.users.UserAlreadyExistException;
 import com.scribblemate.exceptions.users.UserNotDeletedException;
@@ -55,18 +52,6 @@ public class GlobalExceptionController {
 	@ExceptionHandler(value = ExpiredJwtException.class)
 	public ResponseEntity<ErrorResponse> handleExpiredJwtException(ExpiredJwtException exp) {
 		return buildErrorResponse(HttpStatus.FORBIDDEN, ResponseErrorUtils.JWT_TOKEN_EXPIRED, exp.getMessage());
-	}
-
-	@ExceptionHandler(value = RefreshTokenExpiredException.class)
-	public ResponseEntity<ErrorResponse> handleRefreshTokenExpiredException(RefreshTokenExpiredException exp) {
-		return buildErrorResponse(HttpStatus.UNAUTHORIZED, ResponseErrorUtils.REFRESH_TOKEN_EXPIRED, exp.getMessage());
-	}
-
-	@ExceptionHandler(value = RefreshTokenMissingOrInvalidException.class)
-	public ResponseEntity<ErrorResponse> handleRefreshTokenMissingOrInvalidException(
-			RefreshTokenMissingOrInvalidException exp) {
-		return buildErrorResponse(HttpStatus.UNAUTHORIZED, ResponseErrorUtils.REFRESH_TOKEN_MISSING_OR_INVALID,
-				exp.getMessage());
 	}
 
 	@ExceptionHandler(value = RegistrationException.class)

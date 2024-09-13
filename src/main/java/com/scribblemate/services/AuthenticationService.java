@@ -5,9 +5,10 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.scribblemate.dto.LoginDto;
 import com.scribblemate.dto.RegistrationDto;
 import com.scribblemate.entities.User;
@@ -17,7 +18,6 @@ import com.scribblemate.exceptions.users.UserNotFoundException;
 import com.scribblemate.repositories.UserRepository;
 import com.scribblemate.utility.UserUtils;
 import com.scribblemate.utility.Utils.Status;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -40,23 +40,27 @@ public class AuthenticationService {
 
 	public User signUp(RegistrationDto input) {
 		Optional<User> existingUser = userRepository.findByEmail(input.getEmail());
-		if(existingUser.isPresent())
+		if (existingUser.isPresent())
 			throw new UserAlreadyExistException();
 		User newUser = null;
 		try {
-		 newUser = new User().setFullName(input.getFullName()).setEmail(input.getEmail())
+			newUser = new User().setFullName(input.getFullName()).setEmail(input.getEmail())
 					.setPassword(passwordEncoder.encode(input.getPassword())).setStatus(Status.ACTIVE);
 			return userRepository.save(newUser);
 		} catch (Exception exp) {
-			log.error(UserUtils.ERROR_PERSISTING_USER,newUser);
+			log.error(UserUtils.ERROR_PERSISTING_USER, newUser);
 			throw new RegistrationException();
 		}
 	}
 
 	public User authenticate(LoginDto input) {
-		authenticationManager
+		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(input.getEmail(), input.getPassword()));
-		return userRepository.findByEmail(input.getEmail()).orElseThrow(() -> new UserNotFoundException());
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		return userRepository.findByEmail(input.getEmail()).orElseThrow(() -> {
+			log.error(UserUtils.ERROR_USER_NOT_FOUND);
+			return new UserNotFoundException();
+		});
 	}
 
 	public boolean forgot(String email) {

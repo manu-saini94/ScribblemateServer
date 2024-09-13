@@ -1,7 +1,11 @@
 package com.scribblemate.responses;
 
+import com.scribblemate.dto.UserResponseDto;
+
 public class LoginResponse {
 	private String token;
+
+	private UserResponseDto userDto;
 
 	private long expiresIn;
 
@@ -32,6 +36,15 @@ public class LoginResponse {
 		this.expiresIn = expiresIn;
 		return this;
 
+	}
+
+	public UserResponseDto getUserDto() {
+		return userDto;
+	}
+
+	public LoginResponse setUserDto(UserResponseDto userDto) {
+		this.userDto = userDto;
+		return this;
 	}
 
 }
