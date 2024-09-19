@@ -1,5 +1,7 @@
 package com.scribblemate.dto;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +16,10 @@ public class LabelDto {
 	private Integer id;
 
 	private String labelName;
+	
+	private LocalDateTime createdAt;
+	
+	private LocalDateTime updatedAt;
 
 
 }

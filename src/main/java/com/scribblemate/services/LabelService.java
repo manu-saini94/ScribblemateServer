@@ -108,6 +108,8 @@ public class LabelService {
 		LabelDto labelDto = new LabelDto();
 		labelDto.setId(savedLabel.getId());
 		labelDto.setLabelName(savedLabel.getLabelName());
+		labelDto.setCreatedAt(savedLabel.getCreatedAt());
+		labelDto.setUpdatedAt(savedLabel.getUpdatedAt());
 		return labelDto;
 	}
 
