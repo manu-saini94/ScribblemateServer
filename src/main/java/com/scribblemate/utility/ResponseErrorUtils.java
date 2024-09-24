@@ -15,7 +15,8 @@ public enum ResponseErrorUtils {
 	USER_ALREADY_EXIST("User already exists with this email"),
 	LABEL_PERSIST_ERROR("Error occurred while persisting label"), LABELS_NOT_FOUND("Labels not found"),
 	LABEL_DELETE_ERROR("Error while deleting Labels"), LABEL_UPDATE_ERROR("Error updating Labels"),
-	USER_NOT_DELETED("User not deleted"), USER_IS_INACTIVE("User is Inactive");
+	LABEL_ALREADY_EXIST_ERROR("Label already Exist"), USER_NOT_DELETED("User not deleted"),
+	USER_IS_INACTIVE("User is Inactive");
 
 	private final String message;
 

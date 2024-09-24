@@ -2,13 +2,10 @@ package com.scribblemate.entities;
 
 import java.util.List;
 import java.util.Objects;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -29,6 +26,9 @@ public class Label extends CommonFields {
 
 	@Column(name = "label_name")
 	private String labelName;
+	
+	@Column(name = "is_important")
+	private boolean isImportant;
 
 	@ManyToMany(mappedBy = "labelSet", fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE,
 			CascadeType.REMOVE })

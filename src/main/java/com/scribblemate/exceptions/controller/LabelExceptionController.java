@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.scribblemate.exceptions.labels.LabelAlreadyExistException;
 import com.scribblemate.exceptions.labels.LabelNotDeletedException;
 import com.scribblemate.exceptions.labels.LabelNotFoundException;
 import com.scribblemate.exceptions.labels.LabelNotPersistedException;
@@ -47,6 +48,12 @@ public class LabelExceptionController {
 	@ExceptionHandler(value = LabelNotUpdatedException.class)
 	public ResponseEntity<ErrorResponse> handleLabelNotUpdatedException(LabelNotUpdatedException exp) {
 		return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ResponseErrorUtils.LABEL_UPDATE_ERROR,
+				exp.getMessage());
+	}
+	
+	@ExceptionHandler(value = LabelAlreadyExistException.class)
+	public ResponseEntity<ErrorResponse> handleLabelAlreadyExistException(LabelAlreadyExistException exp) {
+		return buildErrorResponse(HttpStatus.CONFLICT, ResponseErrorUtils.LABEL_ALREADY_EXIST_ERROR,
 				exp.getMessage());
 	}
 }

@@ -428,6 +428,7 @@ public class NoteService {
 				LabelDto labelDto = new LabelDto();
 				labelDto.setId(labelItem.getId());
 				labelDto.setLabelName(labelItem.getLabelName());
+				labelDto.setImportant(labelItem.isImportant());
 				return labelDto;
 			}).collect(Collectors.toSet());
 			noteDto.setLabelSet(labelDtoSet);

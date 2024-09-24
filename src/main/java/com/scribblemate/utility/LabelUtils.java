@@ -10,5 +10,6 @@ public class LabelUtils {
 	public static final String LABEL_UPDATE_ERROR = "Error occurred while updating label: {}";
 	public static final String LABEL_FETCH_SUCCESS = "Labels fetched successfully for user : {}";
 	public static final String LABEL_FETCH_ERROR = "Error occurred while fetching labels for user : {} , {}";
+	public static final String LABEL_ALREADY_EXIST_ERROR = "Label already exist : {}";
 
 }
