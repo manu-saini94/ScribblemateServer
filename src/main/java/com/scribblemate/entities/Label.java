@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,6 +35,7 @@ public class Label extends CommonFields {
 	private String labelName;
 
 	@Column(name = "is_important")
+	@JsonProperty(value = "isImportant")
 	private boolean isImportant;
 
 	@ManyToMany(mappedBy = "labelSet", fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE,

@@ -2,28 +2,71 @@ package com.scribblemate.dto;
 
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class LabelDto {
 
 	private Integer id;
 
 	private String labelName;
 
-	@JsonProperty
 	private boolean isImportant;
 
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getLabelName() {
+		return labelName;
+	}
+
+	public void setLabelName(String labelName) {
+		this.labelName = labelName;
+	}
+
+	public boolean isImportant() {
+		return isImportant;
+	}
+
+	public void setImportant(boolean isImportant) {
+		this.isImportant = isImportant;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public LabelDto(Integer id, String labelName, boolean isImportant, LocalDateTime createdAt,
+			LocalDateTime updatedAt) {
+		super();
+		this.id = id;
+		this.labelName = labelName;
+		this.isImportant = isImportant;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
+
+	public LabelDto() {
+		super();
+
+	}
 
 }
