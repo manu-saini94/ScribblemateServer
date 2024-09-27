@@ -2,9 +2,13 @@ package com.scribblemate.entities;
 
 import java.util.List;
 import java.util.Objects;
+
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
@@ -22,11 +26,12 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Label extends CommonFields {
 
 	@Column(name = "label_name")
 	private String labelName;
-	
+
 	@Column(name = "is_important")
 	private boolean isImportant;
 
