@@ -45,5 +45,3 @@
 //
 //}
 package com.scribblemate.entities;
-
-

@@ -5,15 +5,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.scribblemate.utility.Utils.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.scribblemate.utility.Utils.Status;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,6 +52,7 @@ public class User implements UserDetails {
 	private String email;
 
 	@Column(nullable = false)
+	@JsonIgnore
 	private String password;
 
 	@Enumerated(EnumType.STRING)

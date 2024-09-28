@@ -10,24 +10,31 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.scribblemate.dto.LoginDto;
 import com.scribblemate.dto.RegistrationDto;
+import com.scribblemate.dto.UserResponseDto;
 import com.scribblemate.entities.User;
 import com.scribblemate.exceptions.users.UserInactiveException;
 import com.scribblemate.responses.LoginResponse;
 import com.scribblemate.services.AuthenticationService;
 import com.scribblemate.services.JwtAuthenticationService;
+import com.scribblemate.services.UserService;
 import com.scribblemate.utility.Utils.Status;
 
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth")
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AuthenticationController {
+
+	private final UserService userService;
+
 	private final JwtAuthenticationService jwtService;
 
 	private final AuthenticationService authenticationService;
 
-	public AuthenticationController(JwtAuthenticationService jwtService, AuthenticationService authenticationService) {
+	public AuthenticationController(JwtAuthenticationService jwtService, AuthenticationService authenticationService,
+			UserService userService) {
 		this.jwtService = jwtService;
 		this.authenticationService = authenticationService;
+		this.userService = userService;
 	}
 
 	@PostMapping("/signup")
@@ -48,9 +55,9 @@ public class AuthenticationController {
 		if (authenticatedUser.getStatus().equals(Status.INACTIVE))
 			throw new UserInactiveException();
 		String jwtToken = jwtService.generateToken(authenticatedUser);
+		UserResponseDto userResponseDto = userService.getUserDtoFromUser(authenticatedUser);
 		LoginResponse loginResponse = new LoginResponse().setToken(jwtToken)
-				.setExpiresIn(jwtService.getExpirationTime());
-
+				.setExpiresIn(jwtService.getExpirationTime()).setUserDto(userResponseDto);
 		return ResponseEntity.ok(loginResponse);
 	}
 

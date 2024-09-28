@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.scribblemate.dto.UserResponseDto;
 import com.scribblemate.entities.SpecificNote;
 import com.scribblemate.entities.User;
-import com.scribblemate.exceptions.notes.NoteNotDeletedException;
 import com.scribblemate.exceptions.users.UserNotDeletedException;
 import com.scribblemate.exceptions.users.UserNotFoundException;
 import com.scribblemate.repositories.LabelRepository;
@@ -16,7 +15,6 @@ import com.scribblemate.repositories.SpecificNoteRepository;
 import com.scribblemate.repositories.UserRepository;
 import com.scribblemate.utility.NoteUtils;
 import com.scribblemate.utility.Utils.Status;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -88,6 +86,17 @@ public class UserService {
 			log.error(NoteUtils.ERROR_DELETING_USER, new UserNotDeletedException(exp.getMessage()));
 			throw new UserNotDeletedException(exp.getMessage());
 		}
+	}
+
+	public UserResponseDto getUserDtoFromUser(User user) {
+		UserResponseDto userDto = new UserResponseDto();
+		userDto.setEmail(user.getEmail());
+		userDto.setFullName(user.getFullName());
+		userDto.setProfilePicture(user.getProfilePicture());
+		userDto.setStatus(user.getStatus());
+		userDto.setCreatedAt(user.getCreatedAt());
+		userDto.setUpdatedAt(user.getUpdatedAt());
+		return userDto;
 	}
 
 }

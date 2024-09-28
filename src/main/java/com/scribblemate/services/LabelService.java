@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.scribblemate.dto.LabelDto;
 import com.scribblemate.entities.Label;
 import com.scribblemate.entities.User;
+import com.scribblemate.exceptions.labels.LabelAlreadyExistException;
 import com.scribblemate.exceptions.labels.LabelNotDeletedException;
 import com.scribblemate.exceptions.labels.LabelNotPersistedException;
 import com.scribblemate.exceptions.labels.LabelNotUpdatedException;
@@ -39,15 +40,22 @@ public class LabelService {
 	public LabelDto createNewLabel(LabelDto labelDto, User currentUser) {
 		User user = userRepository.findByEmail(currentUser.getEmail()).orElseThrow(() -> new UserNotFoundException());
 		try {
+			Set<Label> labelSet = user.getLabelSet();
 			Label label = new Label();
 			label.setLabelName(labelDto.getLabelName());
+			label.setImportant(labelDto.isImportant());
 			label.setUser(user);
-			Set<Label> labelSet = user.getLabelSet();
 			if (labelSet == null) {
 				labelSet = new HashSet<Label>();
 				labelSet.add(label);
 				user.setLabelSet(labelSet);
 			} else {
+				boolean alreadyExist = labelSet.stream()
+						.anyMatch(labelItem -> labelItem.getLabelName().equalsIgnoreCase(labelDto.getLabelName()));
+				if (alreadyExist) {
+					log.error(LabelUtils.LABEL_ALREADY_EXIST_ERROR, label);
+					throw new LabelAlreadyExistException();
+				}
 				labelSet.add(label);
 			}
 			Label savedLabel = labelRepository.save(label);
@@ -79,6 +87,7 @@ public class LabelService {
 		try {
 			Label label = labelRepository.findByIdAndUser(labelDto.getId(), user);
 			label.setLabelName(labelDto.getLabelName());
+			label.setImportant(labelDto.isImportant());
 			Label savedLabel = labelRepository.save(label);
 			log.info(LabelUtils.LABEL_UPDATE_SUCCESS, savedLabel.getId());
 			return getLabelDtoFromLabel(savedLabel);
@@ -108,6 +117,9 @@ public class LabelService {
 		LabelDto labelDto = new LabelDto();
 		labelDto.setId(savedLabel.getId());
 		labelDto.setLabelName(savedLabel.getLabelName());
+		labelDto.setImportant(savedLabel.isImportant());
+		labelDto.setCreatedAt(savedLabel.getCreatedAt());
+		labelDto.setUpdatedAt(savedLabel.getUpdatedAt());
 		return labelDto;
 	}
 
