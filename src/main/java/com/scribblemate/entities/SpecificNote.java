@@ -6,6 +6,7 @@ import java.util.Set;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.scribblemate.utility.Utils.Role;
 
 import jakarta.persistence.CascadeType;
@@ -40,12 +41,15 @@ public class SpecificNote extends CommonFields {
 	private String color;
 
 	@Column(name = "is_pinned")
+	@JsonProperty(value = "isPinned")
 	private boolean isPinned;
 
 	@Column(name = "is_archived")
+	@JsonProperty(value = "is_archived")
 	private boolean isArchived;
 
 	@Column(name = "is_trashed")
+	@JsonProperty(value = "isTrashed")
 	private boolean isTrashed;
 
 	@Column(name = "reminder")
