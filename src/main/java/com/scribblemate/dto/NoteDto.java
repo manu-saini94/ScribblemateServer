@@ -11,20 +11,16 @@ public class NoteDto {
 
 	private Integer id;
 
-
 	private String title;
 
 	private String content;
 
 	private List<String> images;
 
-	@JsonProperty
 	private boolean isTrashed;
 
-	@JsonProperty
 	private boolean isArchived;
 
-	@JsonProperty
 	private boolean isPinned;
 
 	private String color;

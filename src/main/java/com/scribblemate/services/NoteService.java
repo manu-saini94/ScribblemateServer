@@ -228,6 +228,20 @@ public class NoteService {
 			throw new NoteNotFoundException();
 		}
 	}
+	
+	
+	public List<NoteDto> getAllNotesForUser(User user) {
+		try {
+			List<SpecificNote> noteList = specificNoteRepository
+					.findAllByUserOrderByCommonNoteCreatedAtDesc(user);
+			List<NoteDto> noteDtoList = getNoteDtoFromNoteList(noteList, user);
+			return noteDtoList;
+		} catch (Exception exp) {
+			log.error(NoteUtils.ERROR_FETCHING_NOTES_FOR_USER, user, new NotesNotFoundException(exp.getMessage()));
+			throw new NotesNotFoundException(exp.getMessage());
+
+		}
+	}
 
 	public List<NoteDto> getAllNotesByUser(User user) {
 		try {

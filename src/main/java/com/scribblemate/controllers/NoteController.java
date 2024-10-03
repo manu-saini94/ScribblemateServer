@@ -70,6 +70,14 @@ public class NoteController {
 		return ResponseEntity.ok()
 				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_UPDATE_SUCCESS, note));
 	}
+	
+	@GetMapping("/get/all")
+	public ResponseEntity<SuccessResponse> getAllNotes(HttpServletRequest httpRequest) {
+		User user = userService.getEmailFromJwt(httpRequest);
+		List<NoteDto> notesList = noteService.getAllNotesForUser(user);
+		return ResponseEntity.ok().body(
+				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_FETCHING_SUCCESS, notesList));
+	}
 
 	
 	@GetMapping("/get")

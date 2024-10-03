@@ -45,7 +45,7 @@ public class SpecificNote extends CommonFields {
 	private boolean isPinned;
 
 	@Column(name = "is_archived")
-	@JsonProperty(value = "is_archived")
+	@JsonProperty(value = "isArchived")
 	private boolean isArchived;
 
 	@Column(name = "is_trashed")
@@ -69,9 +69,5 @@ public class SpecificNote extends CommonFields {
 
 	@ManyToOne
 	private Note commonNote;
-
-	@UpdateTimestamp
-	@Column(name = "updated_at")
-	private LocalDateTime updatedAt;
 
 }
