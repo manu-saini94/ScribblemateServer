@@ -12,6 +12,8 @@ import lombok.Setter;
 public class CollaboratorDto {
 
 	private Integer id;
+	
+	private String name;
 
 	private String email;
 

@@ -228,12 +228,10 @@ public class NoteService {
 			throw new NoteNotFoundException();
 		}
 	}
-	
-	
+
 	public List<NoteDto> getAllNotesForUser(User user) {
 		try {
-			List<SpecificNote> noteList = specificNoteRepository
-					.findAllByUserOrderByCommonNoteCreatedAtDesc(user);
+			List<SpecificNote> noteList = specificNoteRepository.findAllByUserOrderByCommonNoteCreatedAtDesc(user);
 			List<NoteDto> noteDtoList = getNoteDtoFromNoteList(noteList, user);
 			return noteDtoList;
 		} catch (Exception exp) {
@@ -416,17 +414,34 @@ public class NoteService {
 		return noteDtoList;
 	}
 
+	private CollaboratorDto getCollaboratorDto(User user) {
+		CollaboratorDto collaboratorDto = new CollaboratorDto();
+		collaboratorDto.setId(user.getId());
+		collaboratorDto.setName(user.getFullName());
+		collaboratorDto.setEmail(user.getEmail());
+		return collaboratorDto;
+	}
+
+	private LabelDto getLabelDto(Label label) {
+		LabelDto labelDto = new LabelDto();
+		labelDto.setId(label.getId());
+		labelDto.setLabelName(label.getLabelName());
+		labelDto.setImportant(label.isImportant());
+		labelDto.setCreatedAt(label.getCreatedAt());
+		labelDto.setUpdatedAt(label.getUpdatedAt());
+		return labelDto;
+	}
+
 	private NoteDto setNoteDtoFromNote(Note note, User user) {
 		NoteDto noteDto = new NoteDto();
 		noteDto.setTitle(note.getTitle());
 		noteDto.setContent(note.getContent());
 		noteDto.setImages(note.getImages());
+		noteDto.setCreatedBy(getCollaboratorDto(note.getCreatedBy()));
 		if (note.getCollaboratorList() != null) {
 			List<User> collaboratorList = note.getCollaboratorList();
 			List<CollaboratorDto> collaboratorDtoList = collaboratorList.stream().map(collaboratorItem -> {
-				CollaboratorDto collaboratorDto = new CollaboratorDto();
-				collaboratorDto.setId(collaboratorItem.getId());
-				collaboratorDto.setEmail(collaboratorItem.getEmail());
+				CollaboratorDto collaboratorDto = getCollaboratorDto(collaboratorItem);
 				return collaboratorDto;
 			}).collect(Collectors.toList());
 			noteDto.setCollaboratorList(collaboratorDtoList);
@@ -441,10 +456,7 @@ public class NoteService {
 		if (specificNote.getLabelSet() != null) {
 			Set<Label> labelSet = specificNote.getLabelSet();
 			Set<LabelDto> labelDtoSet = labelSet.stream().map(labelItem -> {
-				LabelDto labelDto = new LabelDto();
-				labelDto.setId(labelItem.getId());
-				labelDto.setLabelName(labelItem.getLabelName());
-				labelDto.setImportant(labelItem.isImportant());
+				LabelDto labelDto = getLabelDto(labelItem);
 				return labelDto;
 			}).collect(Collectors.toSet());
 			noteDto.setLabelSet(labelDtoSet);

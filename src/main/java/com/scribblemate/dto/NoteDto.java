@@ -30,6 +30,10 @@ public class NoteDto {
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;
+	
+	private CollaboratorDto createdBy;
+	
+	private CollaboratorDto updatedBy;
 
 	private Set<LabelDto> labelSet;
 
@@ -149,6 +153,24 @@ public class NoteDto {
 	public void setLabelSet(Set<LabelDto> labelSet) {
 		this.labelSet = labelSet;
 	}
+	
+	
+
+	public CollaboratorDto getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(CollaboratorDto createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public CollaboratorDto getUpdatedBy() {
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(CollaboratorDto updatedBy) {
+		this.updatedBy = updatedBy;
+	}
 
 	public NoteDto() {
 		super();
@@ -156,7 +178,8 @@ public class NoteDto {
 
 	public NoteDto(Integer id, String title, String content, List<String> images, boolean isTrashed, boolean isArchived,
 			boolean isPinned, String color, LocalDateTime reminder, LocalDateTime createdAt, LocalDateTime updatedAt,
-			Set<LabelDto> labelSet, List<CollaboratorDto> collaboratorList, User user) {
+			CollaboratorDto createdBy, CollaboratorDto updatedBy, Set<LabelDto> labelSet,
+			List<CollaboratorDto> collaboratorList, User user) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -169,9 +192,13 @@ public class NoteDto {
 		this.reminder = reminder;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
+		this.createdBy = createdBy;
+		this.updatedBy = updatedBy;
 		this.labelSet = labelSet;
 		this.collaboratorList = collaboratorList;
 		this.user = user;
 	}
+
+
 
 }
