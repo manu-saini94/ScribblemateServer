@@ -16,6 +16,7 @@ import com.scribblemate.services.JwtAuthenticationService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -37,22 +38,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
 			@NonNull FilterChain filterChain) throws ServletException, IOException {
-		final String authHeader = request.getHeader("Authorization");
+		// Extract accessToken from cookies
+		Cookie[] cookies = request.getCookies();
+		String jwt = null;
 
-		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if ("accessToken".equals(cookie.getName())) {
+					jwt = cookie.getValue();
+					break;
+				}
+			}
+		}
+
+		// If accessToken is missing, proceed with the filter chain
+		if (jwt == null) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
 		try {
-			final String jwt = authHeader.substring(7);
-			final String userEmail = jwtService.extractUsername(jwt);
+			// Extract the user email from the JWT token
+			String userEmail = jwtService.extractUsername(jwt);
 
+			// Check if the user is already authenticated
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 			if (userEmail != null && authentication == null) {
 				UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
+				// Validate the JWT token
 				if (jwtService.isTokenValid(jwt, userDetails)) {
 					UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
 							null, userDetails.getAuthorities());
@@ -62,8 +77,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				}
 			}
 
+			// Continue with the filter chain
 			filterChain.doFilter(request, response);
+
 		} catch (Exception exception) {
+			// Handle any exceptions that occur during authentication
 			handlerExceptionResolver.resolveException(request, response, null, exception);
 		}
 	}

@@ -36,7 +36,7 @@ public class LabelController {
 
 	@PostMapping("/create")
 	public ResponseEntity<SuccessResponse> createLabel(@RequestBody LabelDto labelDto, HttpServletRequest httpRequest) {
-		User user = userService.getEmailFromJwt(httpRequest);
+		User user = userService.getUserFromHttpRequest(httpRequest);
 		LabelDto newLabelDto = labelService.createNewLabel(labelDto, user);
 		return ResponseEntity.ok().body(
 				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.LABEL_PERSIST_SUCCESS, newLabelDto));
@@ -44,7 +44,7 @@ public class LabelController {
 
 	@PutMapping("/update")
 	public ResponseEntity<SuccessResponse> updateLabel(@RequestBody LabelDto labelDto, HttpServletRequest httpRequest) {
-		User user = userService.getEmailFromJwt(httpRequest);
+		User user = userService.getUserFromHttpRequest(httpRequest);
 		LabelDto updatedLabelDto = labelService.editLabel(labelDto, user);
 		return ResponseEntity.ok().body(
 				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.LABEL_UPDATE_SUCCESS, updatedLabelDto));
@@ -52,7 +52,7 @@ public class LabelController {
 
 	@GetMapping("/get")
 	public ResponseEntity<SuccessResponse> getAllLabelsByUser(HttpServletRequest httpRequest) {
-		User user = userService.getEmailFromJwt(httpRequest);
+		User user = userService.getUserFromHttpRequest(httpRequest);
 		List<LabelDto> labelList = labelService.getLabelsByUser(user);
 		return ResponseEntity.ok().body(
 				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.LABEL_FETCHING_SUCCESS, labelList));
@@ -61,7 +61,7 @@ public class LabelController {
 	@DeleteMapping("/delete")
 	public ResponseEntity<SuccessResponse> deleteLabelByUser(@RequestParam("id") int labelId,
 			HttpServletRequest httpRequest) {
-		User user = userService.getEmailFromJwt(httpRequest);
+		User user = userService.getUserFromHttpRequest(httpRequest);
 		boolean isDeleted = labelService.deleteLabel(labelId, user);
 		return ResponseEntity.ok()
 				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.LABEL_DELETE_SUCCESS, isDeleted));
