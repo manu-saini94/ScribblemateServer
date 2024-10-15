@@ -79,13 +79,15 @@ public class AuthenticationService {
 		Cookie newRefreshTokenCookie = new Cookie("refreshToken", token.getToken());
 		newRefreshTokenCookie.setHttpOnly(true);
 		newRefreshTokenCookie.setPath("/");
+		newRefreshTokenCookie.setSecure(true);
 		newRefreshTokenCookie.setMaxAge((int) (refreshTokenDurationMs / 1000));
 		return newRefreshTokenCookie;
 	}
 
 	public Cookie createAndReturnCookieWithAccessToken(String token) {
 		Cookie newAccessTokenCookie = new Cookie("accessToken", token);
-		newAccessTokenCookie.setHttpOnly(false);
+		newAccessTokenCookie.setHttpOnly(true);
+		newAccessTokenCookie.setSecure(true);
 		newAccessTokenCookie.setPath("/");
 		newAccessTokenCookie.setMaxAge((int) (accessTokenDurationMs / 1000));
 		return newAccessTokenCookie;
@@ -104,7 +106,7 @@ public class AuthenticationService {
 			}
 
 			// Add SameSite attribute
-			cookieHeader.append("; SameSite=strict; secure");
+			cookieHeader.append("; SameSite=none; secure");
 
 			// Add the cookie to the response
 			response.addHeader("Set-Cookie", cookieHeader.toString());

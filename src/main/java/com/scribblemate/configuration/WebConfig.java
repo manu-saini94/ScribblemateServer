@@ -8,10 +8,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-
 public class WebConfig {
 
 	@Bean
@@ -20,7 +20,7 @@ public class WebConfig {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(true); // Allow credentials
-		config.addAllowedOrigin("https://localhost:3000"); // Replace with your frontend URL
+		config.addAllowedOrigin("http://localhost:3000"); // Replace with your frontend URL
 		config.addAllowedHeader("*");
 		config.addAllowedMethod("*");
 

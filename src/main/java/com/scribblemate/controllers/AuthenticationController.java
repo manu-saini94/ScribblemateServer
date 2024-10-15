@@ -33,7 +33,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @RequestMapping("/api/v1/auth")
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", allowCredentials="true")
 public class AuthenticationController {
 
 	private final JwtAuthenticationService jwtService;
