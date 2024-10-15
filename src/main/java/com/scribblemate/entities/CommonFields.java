@@ -3,6 +3,9 @@ package com.scribblemate.entities;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,11 +30,11 @@ public class CommonFields {
 	@Column(nullable = false, name = "id")
 	private Integer id;
 
-	@UpdateTimestamp
+	@LastModifiedDate
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
 
-	@CreationTimestamp
+	@CreatedDate
 	@Column(updatable = false, name = "created_at")
 	private LocalDateTime createdAt;
 

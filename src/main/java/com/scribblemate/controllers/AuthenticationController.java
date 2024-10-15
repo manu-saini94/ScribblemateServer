@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.scribblemate.dto.LoginDto;
 import com.scribblemate.dto.RegistrationDto;
 import com.scribblemate.entities.RefreshToken;
+import com.scribblemate.dto.UserResponseDto;
 import com.scribblemate.entities.User;
 import com.scribblemate.exceptions.users.RefreshTokenExpiredException;
 import com.scribblemate.exceptions.users.RefreshTokenMissingOrInvalidException;
@@ -26,6 +27,7 @@ import com.scribblemate.services.JwtAuthenticationService;
 import com.scribblemate.services.RefreshTokenService;
 import com.scribblemate.services.UserService;
 import com.scribblemate.utility.ResponseSuccessUtils;
+import com.scribblemate.services.UserService;
 import com.scribblemate.utility.Utils.Status;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,6 +37,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", allowCredentials="true")
 public class AuthenticationController {
+
+	private final UserService userService;
 
 	private final JwtAuthenticationService jwtService;
 
@@ -49,6 +53,11 @@ public class AuthenticationController {
 		this.jwtService = jwtService;
 		this.authenticationService = authenticationService;
 		this.refreshTokenService = refreshTokenService;
+
+	public AuthenticationController(JwtAuthenticationService jwtService, AuthenticationService authenticationService,
+			UserService userService) {
+		this.jwtService = jwtService;
+		this.authenticationService = authenticationService;
 		this.userService = userService;
 	}
 

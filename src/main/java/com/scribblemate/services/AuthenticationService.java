@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.scribblemate.dto.LoginDto;
 import com.scribblemate.dto.RegistrationDto;
 import com.scribblemate.entities.RefreshToken;
@@ -21,7 +20,6 @@ import com.scribblemate.exceptions.users.UserNotFoundException;
 import com.scribblemate.repositories.UserRepository;
 import com.scribblemate.utility.UserUtils;
 import com.scribblemate.utility.Utils.Status;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;

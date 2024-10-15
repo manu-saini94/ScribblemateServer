@@ -13,10 +13,23 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+import com.scribblemate.dto.UserResponseDto;
+
+
 public class LoginResponse {
 
 	private String accessToken;
-
+	private UserResponseDto userDto;
+	private long expiresIn;
 	private long accessTokenExpiresIn;
+
+	public UserResponseDto getUserDto() {
+		return userDto;
+	}
+
+	public LoginResponse setUserDto(UserResponseDto userDto) {
+		this.userDto = userDto;
+		return this;
+	}
 
 }
