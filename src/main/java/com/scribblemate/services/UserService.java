@@ -15,6 +15,7 @@ import com.scribblemate.repositories.SpecificNoteRepository;
 import com.scribblemate.repositories.UserRepository;
 import com.scribblemate.utility.NoteUtils;
 import com.scribblemate.utility.Utils.Status;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -44,9 +45,20 @@ public class UserService {
 		return users;
 	}
 
-	public User getEmailFromJwt(HttpServletRequest httpRequest) {
-		final String authHeader = httpRequest.getHeader("Authorization");
-		final String jwt = authHeader.substring(7);
+	public User getUserFromHttpRequest(HttpServletRequest httpRequest) {
+		Cookie[] cookiesArray = httpRequest.getCookies();
+		String accessTokenString = null;
+		if (cookiesArray != null) {
+			for (Cookie cookie : cookiesArray) {
+				if ("accessToken".equals(cookie.getName())) {
+					accessTokenString = cookie.getValue();
+				}
+			}
+		}
+		return getUserFromJwt(accessTokenString);
+	}
+
+	public User getUserFromJwt(String jwt) {
 		final String userEmail = jwtService.extractUsername(jwt);
 		User user = userRepository.findByEmail(userEmail).get();
 		return user;
