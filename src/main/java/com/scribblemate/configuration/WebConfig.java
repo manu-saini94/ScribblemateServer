@@ -10,16 +10,16 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 public class WebConfig {
+
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	CorsFilter corsFilter() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowCredentials(true); // Allow credentials
-		config.addAllowedOrigin("http://localhost:3000"); // Replace with your frontend URL
+		config.setAllowCredentials(true);
+		config.addAllowedOrigin("http://localhost:3000");
 		config.addAllowedHeader("*");
 		config.addAllowedMethod("*");
-
 		source.registerCorsConfiguration("/**", config);
 		return new CorsFilter(source);
 	}

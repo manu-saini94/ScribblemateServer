@@ -28,7 +28,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping("/api/v1/note")
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 public class NoteController {
 
 	@Autowired
@@ -74,10 +74,10 @@ public class NoteController {
 		return ResponseEntity.ok()
 				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_UPDATE_SUCCESS, note));
 	}
-	
+
 	@GetMapping("/get/all")
 	public ResponseEntity<SuccessResponse> getAllNotes(HttpServletRequest httpRequest) {
-		User user = userService.getEmailFromJwt(httpRequest);
+		User user = userService.getUserFromHttpRequest(httpRequest);
 		List<NoteDto> notesList = noteService.getAllNotesForUser(user);
 		return ResponseEntity.ok().body(
 				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_FETCHING_SUCCESS, notesList));

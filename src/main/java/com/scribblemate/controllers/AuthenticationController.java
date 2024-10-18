@@ -19,7 +19,6 @@ import com.scribblemate.dto.UserResponseDto;
 import com.scribblemate.entities.User;
 import com.scribblemate.exceptions.users.RefreshTokenExpiredException;
 import com.scribblemate.exceptions.users.RefreshTokenMissingOrInvalidException;
-import com.scribblemate.exceptions.users.UserInactiveException;
 import com.scribblemate.responses.LoginResponse;
 import com.scribblemate.responses.SuccessResponse;
 import com.scribblemate.services.AuthenticationService;
@@ -27,14 +26,13 @@ import com.scribblemate.services.JwtAuthenticationService;
 import com.scribblemate.services.RefreshTokenService;
 import com.scribblemate.services.UserService;
 import com.scribblemate.utility.ResponseSuccessUtils;
-import com.scribblemate.utility.Utils.Status;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RequestMapping("/api/v1/auth")
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", allowCredentials="true")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 public class AuthenticationController {
 
 	private final UserService userService;
@@ -50,11 +48,6 @@ public class AuthenticationController {
 		this.jwtService = jwtService;
 		this.authenticationService = authenticationService;
 		this.refreshTokenService = refreshTokenService;
-
-	public AuthenticationController(JwtAuthenticationService jwtService, AuthenticationService authenticationService,
-			UserService userService) {
-		this.jwtService = jwtService;
-		this.authenticationService = authenticationService;
 		this.userService = userService;
 	}
 
@@ -71,29 +64,13 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<SuccessResponse> authenticate(@RequestBody LoginDto loginUserDto) {
-		User authenticatedUser = authenticationService.authenticate(loginUserDto);
-		if (authenticatedUser.getStatus().equals(Status.INACTIVE))
-			throw new UserInactiveException();
-		String jwtToken = jwtService.generateToken(authenticatedUser);
+	public ResponseEntity<SuccessResponse> authenticate(@RequestBody LoginDto loginUserDto,
+			HttpServletResponse response) {
+		User authenticatedUser = authenticationService.authenticate(loginUserDto, response);
 		UserResponseDto userResponseDto = userService.getUserDtoFromUser(authenticatedUser);
-		LoginResponse loginResponse = new LoginResponse().setToken(jwtToken)
-				.setExpiresIn(jwtService.getExpirationTime()).setUserDto(userResponseDto);
+		LoginResponse loginResponse = new LoginResponse().setUserDto(userResponseDto);
 		return ResponseEntity.ok().body(
 				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.USER_LOGIN_SUCCESS, loginResponse));
-
-
-	public ResponseEntity<User> authenticate(@RequestBody LoginDto loginUserDto, HttpServletResponse response) {
-		User authenticatedUser = authenticationService.authenticate(loginUserDto);
-		if (authenticatedUser.getStatus().equals(Status.INACTIVE))
-			throw new UserInactiveException();
-		// Generate access token
-		String jwtAccessToken = jwtService.generateToken(authenticatedUser);
-		Cookie newAccessTokenCookie = authenticationService.createAndReturnCookieWithAccessToken(jwtAccessToken);
-		RefreshToken refreshToken = refreshTokenService.createRefreshToken(authenticatedUser);
-		Cookie newRefreshTokenCookie = authenticationService.createAndReturnCookieWithRefreshToken(refreshToken);
-		authenticationService.addCookies(response, newAccessTokenCookie, newRefreshTokenCookie);
-		return ResponseEntity.ok(authenticatedUser);
 	}
 
 	@PostMapping("/refresh-token")
@@ -111,27 +88,22 @@ public class AuthenticationController {
 		if (refreshTokenValue == null) {
 			throw new RefreshTokenMissingOrInvalidException("Refresh token is missing or invalid");
 		}
-
 		Optional<RefreshToken> tokenOptional = refreshTokenService.findByToken(refreshTokenValue);
-
 		if (tokenOptional.isEmpty() || refreshTokenService.isRefreshTokenExpired(tokenOptional.get())) {
 			throw new RefreshTokenExpiredException("Refresh token has expired");
 		}
-
 		RefreshToken token = tokenOptional.get();
 		User user = token.getUser();
-
 		String jwtAccessToken = jwtService.generateToken(user);
 		Cookie newAccessTokenCookie = authenticationService.createAndReturnCookieWithAccessToken(jwtAccessToken);
 		response.addCookie(newAccessTokenCookie);
-
-		// Optionally, create a new refresh token
 		RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
 		Cookie newRefreshTokenCookie = authenticationService.createAndReturnCookieWithRefreshToken(newRefreshToken);
 		response.addCookie(newRefreshTokenCookie);
-
-		return ResponseEntity.ok()
-				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.TOKEN_REFRESH_SUCCESS, user));
+		UserResponseDto userResponseDto = userService.getUserDtoFromUser(user);
+		LoginResponse loginResponse = new LoginResponse().setUserDto(userResponseDto);
+		return ResponseEntity.ok().body(
+				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.TOKEN_REFRESH_SUCCESS, loginResponse));
 	}
 
 	@PostMapping("/logout")
@@ -146,9 +118,9 @@ public class AuthenticationController {
 						user = userService.getUserFromJwt(accessTokenString);
 					}
 					Cookie invalidCookie = new Cookie(cookie.getName(), null);
-					invalidCookie.setHttpOnly("refreshToken".equals(cookie.getName())); // HttpOnly for refresh token
-					invalidCookie.setPath("/"); // Ensure path matches the original cookie
-					invalidCookie.setMaxAge(0); // Set cookie to expire immediately
+//					invalidCookie.setHttpOnly("refreshToken".equals(cookie.getName())); // HttpOnly for refresh token
+					invalidCookie.setPath("/");
+					invalidCookie.setMaxAge(0);
 					response.addCookie(invalidCookie);
 				}
 			}
@@ -161,8 +133,10 @@ public class AuthenticationController {
 			new SecurityContextLogoutHandler().logout(request, response, auth);
 		}
 		SecurityContextHolder.clearContext();
-		return ResponseEntity.ok()
-				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.USER_LOGOUT_SUCCESS, user));
+		UserResponseDto userResponseDto = userService.getUserDtoFromUser(user);
+		LoginResponse loginResponse = new LoginResponse().setUserDto(userResponseDto);
+		return ResponseEntity.ok().body(
+				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.USER_LOGOUT_SUCCESS, loginResponse));
 	}
 
 }

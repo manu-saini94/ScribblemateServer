@@ -39,22 +39,20 @@ public class SecurityConfiguration {
 				.sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authenticationProvider(authenticationProvider)
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-		;
 		SecurityFilterChain chain = http.build();
 		log.info("Configured security filter chain: {}", chain);
 		return chain;
 	}
-	
-//	@Bean
-//	CorsConfigurationSource corsConfigurationSource() {
-//
-//		CorsConfiguration configuration = new CorsConfiguration();
-//		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000/"));
-//		configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS"));
-//		configuration.setAllowCredentials(true);
-//		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//		source.registerCorsConfiguration("/api/v1/**", configuration);
-//		return source;
-//	}
+
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000/"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowCredentials(true);
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/api/v1/**", configuration);
+		return source;
+	}
 
 }
