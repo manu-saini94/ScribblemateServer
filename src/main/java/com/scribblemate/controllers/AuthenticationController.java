@@ -7,11 +7,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.scribblemate.dto.CollaboratorDto;
 import com.scribblemate.dto.LoginDto;
 import com.scribblemate.dto.RegistrationDto;
 import com.scribblemate.entities.RefreshToken;
@@ -104,6 +107,16 @@ public class AuthenticationController {
 		LoginResponse loginResponse = new LoginResponse().setUserDto(userResponseDto);
 		return ResponseEntity.ok().body(
 				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.TOKEN_REFRESH_SUCCESS, loginResponse));
+	}
+
+	@GetMapping("/validate")
+	public ResponseEntity<SuccessResponse> validateUser(HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) {
+		User user = userService.getUserFromHttpRequest(httpRequest);
+		UserResponseDto userResponseDto = userService.getUserDtoFromUser(user);
+		LoginResponse loginResponse = new LoginResponse().setUserDto(userResponseDto);
+		return ResponseEntity.ok().body(new SuccessResponse(HttpStatus.OK.value(),
+				ResponseSuccessUtils.USER_VALIDATION_SUCCESS, loginResponse));
 	}
 
 	@PostMapping("/logout")

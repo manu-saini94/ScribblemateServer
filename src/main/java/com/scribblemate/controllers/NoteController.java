@@ -75,18 +75,10 @@ public class NoteController {
 				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_UPDATE_SUCCESS, note));
 	}
 
-	@GetMapping("/get/all")
+	@GetMapping("/all")
 	public ResponseEntity<SuccessResponse> getAllNotes(HttpServletRequest httpRequest) {
 		User user = userService.getUserFromHttpRequest(httpRequest);
 		List<NoteDto> notesList = noteService.getAllNotesForUser(user);
-		return ResponseEntity.ok().body(
-				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_FETCHING_SUCCESS, notesList));
-	}
-
-	@GetMapping("/get")
-	public ResponseEntity<SuccessResponse> getAllEssentialNotes(HttpServletRequest httpRequest) {
-		User user = userService.getUserFromHttpRequest(httpRequest);
-		List<NoteDto> notesList = noteService.getAllNotesByUser(user);
 		return ResponseEntity.ok().body(
 				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_FETCHING_SUCCESS, notesList));
 	}
