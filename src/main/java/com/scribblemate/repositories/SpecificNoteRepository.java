@@ -20,10 +20,13 @@ public interface SpecificNoteRepository extends JpaRepository<SpecificNote, Inte
 
 	List<SpecificNote> findAllByUserAndIsTrashedFalseAndIsArchivedFalseOrderByCommonNoteCreatedAtDesc(User user);
 
+	List<SpecificNote> findAllByUserOrderByCommonNoteCreatedAtDesc(User user);
+
 	SpecificNote findByCommonNoteAndUser(Note note, User collaborator);
 
 	@Query("SELECT sn FROM SpecificNote sn JOIN sn.labelSet ls WHERE sn.user = :user AND ls = :label")
-	List<SpecificNote> findByUserAndLabelOrderByCommonNoteCreatedAtDesc(@Param("user") User user, @Param("label") Label label);
+	List<SpecificNote> findByUserAndLabelOrderByCommonNoteCreatedAtDesc(@Param("user") User user,
+			@Param("label") Label label);
 
 	@Transactional
 	@Modifying

@@ -2,12 +2,9 @@ package com.scribblemate.entities;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.scribblemate.utility.Utils.Role;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,12 +37,15 @@ public class SpecificNote extends CommonFields {
 	private String color;
 
 	@Column(name = "is_pinned")
+	@JsonProperty(value = "isPinned")
 	private boolean isPinned;
 
 	@Column(name = "is_archived")
+	@JsonProperty(value = "isArchived")
 	private boolean isArchived;
 
 	@Column(name = "is_trashed")
+	@JsonProperty(value = "isTrashed")
 	private boolean isTrashed;
 
 	@Column(name = "reminder")
@@ -65,9 +65,5 @@ public class SpecificNote extends CommonFields {
 
 	@ManyToOne
 	private Note commonNote;
-
-	@UpdateTimestamp
-	@Column(name = "updated_at")
-	private LocalDateTime updatedAt;
 
 }
