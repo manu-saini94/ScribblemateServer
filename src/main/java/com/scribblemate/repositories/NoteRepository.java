@@ -3,17 +3,24 @@ package com.scribblemate.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.scribblemate.entities.Note;
 
 import jakarta.transaction.Transactional;
 
+@Repository
 public interface NoteRepository extends JpaRepository<Note, Integer> {
 
 	@Transactional
 	@Modifying
 	@Query(value = "DELETE FROM note_images WHERE note_id = :noteId", nativeQuery = true)
 	void deleteNoteImages(Integer noteId);
+
+	@Transactional
+	@Modifying
+	@Query(value = "DELETE FROM note_list_items WHERE note_id = :noteId", nativeQuery = true)
+	void deleteListItems(Integer noteId);
 
 //	public List<Note> findAllByUser(User user);
 //

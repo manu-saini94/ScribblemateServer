@@ -12,6 +12,7 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -34,10 +35,11 @@ import lombok.experimental.SuperBuilder;
 @EntityListeners(AuditingEntityListener.class)
 public class Note extends CommonFields {
 
-	@Column(name = "title")
+	@Column(name = "title", length = 1000)
 	private String title;
 
-	@Column(name = "content", length = 10000)
+	@Column(name = "content")
+	@Lob
 	private String content;
 
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -48,6 +50,9 @@ public class Note extends CommonFields {
 
 	@OneToMany(mappedBy = "commonNote", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private List<SpecificNote> specificNoteList;
+
+	@OneToMany(mappedBy = "commonNote", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	private List<ListItems> listItems;
 
 	@UpdateTimestamp
 	@Column(name = "updated_at")

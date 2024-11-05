@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 
 import com.scribblemate.dto.CollaboratorDto;
 import com.scribblemate.dto.LabelDto;
+import com.scribblemate.dto.ListItemsDto;
 import com.scribblemate.dto.NoteDto;
 import com.scribblemate.entities.Label;
+import com.scribblemate.entities.ListItems;
 import com.scribblemate.entities.Note;
 import com.scribblemate.entities.SpecificNote;
 import com.scribblemate.entities.User;
@@ -25,6 +27,7 @@ import com.scribblemate.exceptions.notes.NoteNotUpdatedException;
 import com.scribblemate.exceptions.notes.NotesNotFoundException;
 import com.scribblemate.exceptions.users.UserNotFoundException;
 import com.scribblemate.repositories.LabelRepository;
+import com.scribblemate.repositories.ListItemsRepository;
 import com.scribblemate.repositories.NoteRepository;
 import com.scribblemate.repositories.SpecificNoteRepository;
 import com.scribblemate.repositories.UserRepository;
@@ -41,6 +44,8 @@ public class NoteService {
 
 	@Autowired
 	private LabelService labelService;
+
+	private ListItemsRepository listItemsRepository;
 
 	@Autowired
 	private NoteRepository noteRepository;
@@ -390,6 +395,7 @@ public class NoteService {
 					log.info(NoteUtils.NOTE_PERMANENT_DELETE_SUCCESS);
 					specificNoteRepository.deleteCollaboratorByUserIdAndCommonNoteId(user.getId(), commonNote.getId());
 					noteRepository.deleteNoteImages(commonNote.getId());
+					noteRepository.deleteListItems(commonNote.getId());
 					noteRepository.deleteById(commonNote.getId());
 				}
 				return true;
@@ -403,6 +409,32 @@ public class NoteService {
 			log.error(NoteUtils.NOTE_NOT_FOUND, noteId, new NoteNotFoundException());
 			throw new NoteNotFoundException();
 		}
+	}
+
+	@Transactional
+	public void insertListItemAtPosition(Note note, ListItems newItem, int position) {
+		List<ListItems> listItems = note.getListItems();
+		for (int i = position; i < listItems.size(); i++) {
+			ListItems item = listItems.get(i);
+			item.setOrderIndex(item.getOrderIndex() + 1);
+		}
+		newItem.setOrderIndex(position);
+		listItems.add(position, newItem);
+		listItemsRepository.saveAll(listItems);
+		listItemsRepository.save(newItem);
+	}
+
+	@Transactional
+	public void removeListItem(Note note, ListItems itemToRemove) {
+		List<ListItems> listItems = note.getListItems();
+		int removedIndex = itemToRemove.getOrderIndex();
+		listItems.remove(itemToRemove);
+		for (ListItems item : listItems) {
+			if (item.getOrderIndex() > removedIndex) {
+				item.setOrderIndex(item.getOrderIndex() - 1);
+			}
+		}
+		listItemsRepository.saveAll(listItems);
 	}
 
 	private List<NoteDto> getNoteDtoFromNoteList(List<SpecificNote> noteList, User user) {
@@ -436,6 +468,7 @@ public class NoteService {
 		NoteDto noteDto = new NoteDto();
 		noteDto.setTitle(note.getTitle());
 		noteDto.setContent(note.getContent());
+		setNoteDtoListItemsFromNoteListItems(noteDto, note.getListItems());
 		noteDto.setImages(note.getImages());
 		noteDto.setCreatedBy(getCollaboratorDto(note.getCreatedBy()));
 		if (note.getCollaboratorList() != null) {
@@ -469,6 +502,21 @@ public class NoteService {
 		return noteDto;
 	}
 
+	private void setNoteDtoListItemsFromNoteListItems(NoteDto noteDto, List<ListItems> listItems) {
+		List<ListItemsDto> dtoListItems = noteDto.getListItems();
+		listItems.forEach(item -> {
+			ListItemsDto itemDto = new ListItemsDto();
+			itemDto.setContent(item.getContent());
+			itemDto.setDone(item.isDone());
+			itemDto.setId(item.getId());
+			itemDto.setOrderIndex(item.getOrderIndex());
+			itemDto.setCreatedAt(item.getCreatedAt());
+			itemDto.setUpdatedAt(item.getUpdatedAt());
+			dtoListItems.add(itemDto);
+		});
+
+	}
+
 	@Transactional
 	private Note setNoteFromNoteDto(NoteDto noteDto, Note note, User currentUser) {
 		User user = userRepository.findByEmail(currentUser.getEmail()).orElseThrow(() -> new UserNotFoundException());
@@ -480,6 +528,7 @@ public class NoteService {
 		}
 		note.setTitle(noteDto.getTitle());
 		note.setContent(noteDto.getContent());
+		setNoteListItemsFromNoteDtoListItems(noteDto.getListItems(), note);
 		note.setImages(noteDto.getImages());
 		Note mappedNote = noteRepository.save(note);
 		if (noteDto.getCollaboratorList() != null) {
@@ -529,6 +578,21 @@ public class NoteService {
 		}
 		Note savedNote = noteRepository.save(mappedNote);
 		return savedNote;
+	}
+
+	private void setNoteListItemsFromNoteDtoListItems(List<ListItemsDto> noteDtoListItems, Note note) {
+		List<ListItems> listItems = note.getListItems();
+		noteDtoListItems.forEach(itemDto -> {
+			ListItems item = new ListItems();
+			item.setContent(itemDto.getContent());
+			item.setDone(itemDto.isDone());
+			item.setOrderIndex(itemDto.getOrderIndex());
+			item.setId(itemDto.getId());
+			item.setCreatedAt(itemDto.getCreatedAt());
+			item.setUpdatedAt(itemDto.getUpdatedAt());
+			listItems.add(item);
+		});
+
 	}
 
 	@Transactional
