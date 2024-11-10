@@ -19,7 +19,7 @@ public interface NoteRepository extends JpaRepository<Note, Integer> {
 
 	@Transactional
 	@Modifying
-	@Query(value = "DELETE FROM note_list_items WHERE note_id = :noteId", nativeQuery = true)
+	@Query(value = "DELETE FROM list_items WHERE common_note_id = :noteId", nativeQuery = true)
 	void deleteListItems(Integer noteId);
 
 //	public List<Note> findAllByUser(User user);

@@ -389,7 +389,6 @@ public class NoteService {
 				Note commonNote = note.getCommonNote();
 				List<SpecificNote> noteList = specificNoteRepository.findAllByCommonNote(commonNote);
 				specificNoteRepository.deleteAllByNoteId(note.getId());
-				specificNoteRepository.deleteByCommonNoteIdAndUserId(commonNote.getId(), user.getId());
 				log.info(NoteUtils.NOTE_DELETE_SUCCESS);
 				if (noteList.size() == 1) {
 					log.info(NoteUtils.NOTE_PERMANENT_DELETE_SUCCESS);
@@ -504,17 +503,18 @@ public class NoteService {
 
 	private void setNoteDtoListItemsFromNoteListItems(NoteDto noteDto, List<ListItems> listItems) {
 		List<ListItemsDto> dtoListItems = noteDto.getListItems();
-		listItems.forEach(item -> {
-			ListItemsDto itemDto = new ListItemsDto();
-			itemDto.setContent(item.getContent());
-			itemDto.setDone(item.isDone());
-			itemDto.setId(item.getId());
-			itemDto.setOrderIndex(item.getOrderIndex());
-			itemDto.setCreatedAt(item.getCreatedAt());
-			itemDto.setUpdatedAt(item.getUpdatedAt());
-			dtoListItems.add(itemDto);
-		});
-
+		if (listItems != null) {
+			listItems.forEach(item -> {
+				ListItemsDto itemDto = new ListItemsDto();
+				itemDto.setContent(item.getContent());
+				itemDto.setDone(item.isDone());
+				itemDto.setId(item.getId());
+				itemDto.setOrderIndex(item.getOrderIndex());
+				itemDto.setCreatedAt(item.getCreatedAt());
+				itemDto.setUpdatedAt(item.getUpdatedAt());
+				dtoListItems.add(itemDto);
+			});
+		}
 	}
 
 	@Transactional
@@ -541,8 +541,6 @@ public class NoteService {
 			List<User> nonExistingCollaboratorList = collaboratorList.stream().filter(
 					collaborator -> specificNoteRepository.findByCommonNoteAndUser(mappedNote, collaborator) == null)
 					.collect(Collectors.toList());
-
-			// Adding current user also as a collaborator
 			if (user.getNoteList() != null) {
 				user.getNoteList().add(mappedNote);
 			} else {
@@ -582,16 +580,18 @@ public class NoteService {
 
 	private void setNoteListItemsFromNoteDtoListItems(List<ListItemsDto> noteDtoListItems, Note note) {
 		List<ListItems> listItems = note.getListItems();
-		noteDtoListItems.forEach(itemDto -> {
-			ListItems item = new ListItems();
-			item.setContent(itemDto.getContent());
-			item.setDone(itemDto.isDone());
-			item.setOrderIndex(itemDto.getOrderIndex());
-			item.setId(itemDto.getId());
-			item.setCreatedAt(itemDto.getCreatedAt());
-			item.setUpdatedAt(itemDto.getUpdatedAt());
-			listItems.add(item);
-		});
+		if (noteDtoListItems != null) {
+			noteDtoListItems.forEach(itemDto -> {
+				ListItems item = new ListItems();
+				item.setContent(itemDto.getContent());
+				item.setDone(itemDto.isDone());
+				item.setOrderIndex(itemDto.getOrderIndex());
+				item.setId(itemDto.getId());
+				item.setCreatedAt(itemDto.getCreatedAt());
+				item.setUpdatedAt(itemDto.getUpdatedAt());
+				listItems.add(item);
+			});
+		}
 
 	}
 
@@ -639,19 +639,13 @@ public class NoteService {
 		specificNote.setTrashed(noteDto.isTrashed());
 		specificNote.setUser(user);
 		specificNote.setCommonNote(updatedNote);
-		// Save specificNote to ensure it gets an ID
 		SpecificNote savedSpecificNote = specificNoteRepository.save(specificNote);
-
-		// Associate the saved specificNote with the Note
 		List<SpecificNote> specificNoteList = updatedNote.getSpecificNoteList();
 		if (specificNoteList == null) {
 			specificNoteList = new ArrayList<>();
 			updatedNote.setSpecificNoteList(specificNoteList);
 		}
 		specificNoteList.add(savedSpecificNote);
-
-		// Save updatedNote if needed (if there are changes to be persisted)
-//		noteRepository.save(updatedNote);
 		return updatedNote;
 	}
 
