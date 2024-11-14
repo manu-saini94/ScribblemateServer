@@ -9,7 +9,7 @@ import com.scribblemate.entities.User;
 
 public class NoteDto {
 
-	private Integer id;
+	private Long id;
 
 	private String title;
 
@@ -44,11 +44,11 @@ public class NoteDto {
 	@JsonIgnore
 	private User user;
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -184,7 +184,7 @@ public class NoteDto {
 		super();
 	}
 
-	public NoteDto(Integer id, String title, String content, List<String> images, boolean isTrashed, boolean isArchived,
+	public NoteDto(Long id, String title, String content, List<String> images, boolean isTrashed, boolean isArchived,
 			boolean isPinned, String color, LocalDateTime reminder, LocalDateTime createdAt, LocalDateTime updatedAt,
 			CollaboratorDto createdBy, CollaboratorDto updatedBy, Set<LabelDto> labelSet, List<ListItemsDto> listItems,
 			List<CollaboratorDto> collaboratorList, User user) {

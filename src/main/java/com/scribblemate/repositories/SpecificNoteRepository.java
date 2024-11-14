@@ -18,7 +18,7 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface SpecificNoteRepository extends JpaRepository<SpecificNote, Integer> {
 
-	SpecificNote findByIdAndUser(Integer id, User user);
+	SpecificNote findByIdAndUser(Long id, User user);
 
 	List<SpecificNote> findAllByUserAndIsTrashedFalseAndIsArchivedFalseOrderByCommonNoteCreatedAtDesc(User user);
 
@@ -46,22 +46,22 @@ public interface SpecificNoteRepository extends JpaRepository<SpecificNote, Inte
 	@Transactional
 	@Modifying
 	@Query(value = "DELETE from specific_note WHERE common_note_id = :commonNoteId and user_id = :userId", nativeQuery = true)
-	void deleteByCommonNoteIdAndUserId(@Param("commonNoteId") int commonNoteId, @Param("userId") int userId);
+	void deleteByCommonNoteIdAndUserId(@Param("commonNoteId") Long commonNoteId, @Param("userId") Long userId);
 
 	@Transactional
 	@Modifying
 	@Query(value = "DELETE from note_label WHERE label_id = :labelId", nativeQuery = true)
-	int deleteLabelsFromLabelNote(@Param("labelId") int labelId);
+	int deleteLabelsFromLabelNote(@Param("labelId") Long labelId);
 
 	@Transactional
 	@Modifying
 	@Query(value = "DELETE from note_label WHERE note_id = :noteId", nativeQuery = true)
-	void deleteAllByNoteId(@Param("noteId") int noteId);
+	void deleteAllByNoteId(@Param("noteId") Long noteId);
 
 	@Transactional
 	@Modifying
 	@Query(value = "DELETE from note_collaborator WHERE user_id = :userId and note_id = :noteId ", nativeQuery = true)
-	void deleteCollaboratorByUserIdAndCommonNoteId(@Param("userId") int userId, @Param("noteId") int noteId);
+	void deleteCollaboratorByUserIdAndCommonNoteId(@Param("userId") Long userId, @Param("noteId") Long noteId);
 
 	@Transactional
 	void deleteByCommonNoteAndUser(Note commonNote, User user);

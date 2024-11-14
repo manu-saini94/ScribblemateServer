@@ -14,16 +14,16 @@ import com.scribblemate.entities.User;
 import jakarta.transaction.Transactional;
 
 @Repository
-public interface LabelRepository extends JpaRepository<Label, Integer> {
+public interface LabelRepository extends JpaRepository<Label, Long> {
 
-	Label findByIdAndUser(Integer id, User user);
+	Label findByIdAndUser(Long id, User user);
 
 	List<Label> findAllByUserOrderByLabelName(User user);
 
 	@Transactional
 	@Modifying
 	@Query(value = "DELETE from label WHERE id = :labelId and user_id = :userId", nativeQuery = true)
-	int deleteByIdAndUser(@Param("labelId") int labelId, @Param("userId") int userId);
+	int deleteByIdAndUser(@Param("labelId") Long labelId, @Param("userId") Long userId);
 
 	@Transactional
 	void deleteAllByUser(User user);

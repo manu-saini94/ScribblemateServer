@@ -68,7 +68,7 @@ public class LabelService {
 	}
 
 	@Transactional
-	public boolean deleteLabel(int labelId, User currentUser) {
+	public boolean deleteLabel(Long labelId, User currentUser) {
 		User user = userRepository.findByEmail(currentUser.getEmail()).orElseThrow(() -> new UserNotFoundException());
 		try {
 			specificNoteRepository.deleteLabelsFromLabelNote(labelId);

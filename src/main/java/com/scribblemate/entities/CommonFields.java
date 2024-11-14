@@ -28,7 +28,7 @@ public class CommonFields {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false, name = "id")
-	private Integer id;
+	private Long id;
 
 	@LastModifiedDate
 	@Column(name = "updated_at")

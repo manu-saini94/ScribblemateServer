@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.scribblemate.entities.RefreshToken;
 
 @Repository
-public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Integer> {
+public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
 
 	Optional<RefreshToken> findByToken(String token);
 

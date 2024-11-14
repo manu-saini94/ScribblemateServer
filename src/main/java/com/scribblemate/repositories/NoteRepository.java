@@ -10,17 +10,17 @@ import com.scribblemate.entities.Note;
 import jakarta.transaction.Transactional;
 
 @Repository
-public interface NoteRepository extends JpaRepository<Note, Integer> {
+public interface NoteRepository extends JpaRepository<Note, Long> {
 
 	@Transactional
 	@Modifying
 	@Query(value = "DELETE FROM note_images WHERE note_id = :noteId", nativeQuery = true)
-	void deleteNoteImages(Integer noteId);
+	void deleteNoteImages(Long noteId);
 
 	@Transactional
 	@Modifying
 	@Query(value = "DELETE FROM list_items WHERE common_note_id = :noteId", nativeQuery = true)
-	void deleteListItems(Integer noteId);
+	void deleteListItems(Long noteId);
 
 //	public List<Note> findAllByUser(User user);
 //
