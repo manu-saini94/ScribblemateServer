@@ -119,7 +119,9 @@ public class LabelService {
 		labelDto.setLabelName(savedLabel.getLabelName());
 		labelDto.setImportant(savedLabel.isImportant());
 		labelDto.setCreatedAt(savedLabel.getCreatedAt());
-		labelDto.setUpdatedAt(savedLabel.getUpdatedAt());
+		if (savedLabel.getCreatedAt().compareTo(savedLabel.getUpdatedAt()) != 0) {
+			labelDto.setUpdatedAt(savedLabel.getUpdatedAt());
+		}
 		return labelDto;
 	}
 

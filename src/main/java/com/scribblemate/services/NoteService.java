@@ -490,6 +490,7 @@ public class NoteService {
 		setNoteDtoListItemsFromNoteListItems(noteDto, note.getListItems());
 		noteDto.setImages(note.getImages());
 		noteDto.setCreatedBy(getCollaboratorDto(note.getCreatedBy()));
+
 		if (note.getCollaboratorList() != null) {
 			List<User> collaboratorList = note.getCollaboratorList();
 			List<CollaboratorDto> collaboratorDtoList = collaboratorList.stream().map(collaboratorItem -> {
@@ -503,8 +504,11 @@ public class NoteService {
 				.findFirst().get();
 		noteDto.setId(specificNote.getId());
 		noteDto.setColor(specificNote.getColor());
-		noteDto.setUpdatedAt(specificNote.getUpdatedAt());
 		noteDto.setCreatedAt(specificNote.getCreatedAt());
+		if (specificNote.getCreatedAt().compareTo(specificNote.getUpdatedAt()) != 0) {
+			noteDto.setUpdatedAt(specificNote.getUpdatedAt());
+			noteDto.setUpdatedBy(getCollaboratorDto(note.getUpdatedBy()));
+		}
 		if (specificNote.getLabelSet() != null) {
 			Set<Label> labelSet = specificNote.getLabelSet();
 			Set<LabelDto> labelDtoSet = labelSet.stream().map(labelItem -> {
@@ -591,7 +595,7 @@ public class NoteService {
 			} else {
 				List<User> collabList = mappedNote.getCollaboratorList();
 				collabList.addAll(nonExistingCollaboratorList);
-				collabList.add(user);
+
 			}
 		}
 		Note savedNote = noteRepository.save(mappedNote);
