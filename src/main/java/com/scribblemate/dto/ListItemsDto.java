@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class ListItemsDto {
 
-	private Integer id;
+	private Long id;
 
 	private String content;
 
@@ -16,11 +16,11 @@ public class ListItemsDto {
 
 	private LocalDateTime updatedAt;
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -68,7 +68,7 @@ public class ListItemsDto {
 		super();
 	}
 
-	public ListItemsDto(Integer id, String content, boolean isDone, Integer orderIndex, LocalDateTime createdAt,
+	public ListItemsDto(Long id, String content, boolean isDone, Integer orderIndex, LocalDateTime createdAt,
 			LocalDateTime updatedAt) {
 		super();
 		this.id = id;

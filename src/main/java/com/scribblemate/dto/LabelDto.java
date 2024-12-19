@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class LabelDto {
 
-	private Integer id;
+	private Long id;
 
 	private String labelName;
 
@@ -14,11 +14,11 @@ public class LabelDto {
 
 	private LocalDateTime updatedAt;
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -54,8 +54,7 @@ public class LabelDto {
 		this.updatedAt = updatedAt;
 	}
 
-	public LabelDto(Integer id, String labelName, boolean isImportant, LocalDateTime createdAt,
-			LocalDateTime updatedAt) {
+	public LabelDto(Long id, String labelName, boolean isImportant, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super();
 		this.id = id;
 		this.labelName = labelName;

@@ -59,7 +59,7 @@ public class LabelController {
 	}
 
 	@DeleteMapping("/delete")
-	public ResponseEntity<SuccessResponse> deleteLabelByUser(@RequestParam("id") int labelId,
+	public ResponseEntity<SuccessResponse> deleteLabelByUser(@RequestParam("id") Long labelId,
 			HttpServletRequest httpRequest) {
 		User user = userService.getUserFromHttpRequest(httpRequest);
 		boolean isDeleted = labelService.deleteLabel(labelId, user);

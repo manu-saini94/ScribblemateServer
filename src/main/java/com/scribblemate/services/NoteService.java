@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.scribblemate.dto.CollaboratorDto;
+import com.scribblemate.dto.ColorUpdateDto;
 import com.scribblemate.dto.LabelDto;
 import com.scribblemate.dto.ListItemsDto;
 import com.scribblemate.dto.NoteDto;
@@ -93,7 +94,7 @@ public class NoteService {
 	}
 
 	@Transactional
-	public NoteDto addCollaboratorToNote(User user, int noteId, CollaboratorDto collaboratorDto) {
+	public NoteDto addCollaboratorToNote(User user, Long noteId, CollaboratorDto collaboratorDto) {
 		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
 		if (note != null) {
 			try {
@@ -139,7 +140,7 @@ public class NoteService {
 	}
 
 	@Transactional
-	public NoteDto deleteCollaboratorFromNote(User user, int noteId, int collaboratorId) {
+	public NoteDto deleteCollaboratorFromNote(User user, Long noteId, Long collaboratorId) {
 		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
 		if (note != null) {
 			try {
@@ -171,7 +172,7 @@ public class NoteService {
 		}
 	}
 
-	public NoteDto addLabelToNote(User user, int noteId, LabelDto labelDto) {
+	public NoteDto addLabelToNote(User user, Long noteId, LabelDto labelDto) {
 		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
 		if (note != null) {
 			try {
@@ -206,12 +207,12 @@ public class NoteService {
 		}
 	}
 
-	public NoteDto addNewLabelToNote(User user, int noteId, LabelDto labelDto) {
+	public NoteDto addNewLabelToNote(User user, Long noteId, LabelDto labelDto) {
 		LabelDto newlabelDto = labelService.createNewLabel(labelDto, user);
 		return addLabelToNote(user, noteId, newlabelDto);
 	}
 
-	public NoteDto deleteLabelFromNote(User user, int noteId, int labelId) {
+	public NoteDto deleteLabelFromNote(User user, Long noteId, Long labelId) {
 		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
 		if (note != null) {
 			try {
@@ -268,7 +269,7 @@ public class NoteService {
 		return notesWithLabels;
 	}
 
-	public List<NoteDto> getAllNotesByUserAndLabelId(User user, int labelId) {
+	public List<NoteDto> getAllNotesByUserAndLabelId(User user, Long labelId) {
 		try {
 			Label label = labelRepository.findById(labelId).get();
 			List<SpecificNote> noteList = specificNoteRepository.findByUserAndLabelOrderByCommonNoteCreatedAtDesc(user,
@@ -317,7 +318,26 @@ public class NoteService {
 		}
 	}
 
-	public NoteDto pinNote(User user, int noteId) {
+	public NoteDto updateColorOfNote(User user, ColorUpdateDto colorDto) {
+		SpecificNote note = specificNoteRepository.findByIdAndUser(colorDto.getNoteId(), user);
+		if (note != null) {
+			try {
+				note.setColor(colorDto.getColor());
+				Note updatedNote = note.getCommonNote();
+				Note savedNote = noteRepository.save(updatedNote);
+				log.info(NoteUtils.NOTE_UPDATE_SUCCESS, savedNote);
+				return setNoteDtoFromNote(savedNote, user);
+			} catch (Exception ex) {
+				log.error(NoteUtils.NOTE_UPDATE_ERROR, new NoteNotUpdatedException(ex.getMessage()));
+				throw new NoteNotUpdatedException(ex.getMessage());
+			}
+		} else {
+			log.error(NoteUtils.NOTE_NOT_FOUND, colorDto.getNoteId(), new NoteNotFoundException());
+			throw new NoteNotFoundException();
+		}
+	}
+
+	public NoteDto pinNote(User user, Long noteId) {
 		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
 		if (note != null) {
 			try {
@@ -338,7 +358,7 @@ public class NoteService {
 		}
 	}
 
-	public NoteDto archiveNote(User user, int noteId) {
+	public NoteDto archiveNote(User user, Long noteId) {
 		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
 		if (note != null) {
 			try {
@@ -359,7 +379,7 @@ public class NoteService {
 		}
 	}
 
-	public NoteDto trashNote(User user, int noteId) {
+	public NoteDto trashNote(User user, Long noteId) {
 		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
 		if (note != null) {
 			try {
@@ -381,7 +401,7 @@ public class NoteService {
 	}
 
 	@Transactional
-	public boolean deleteNoteByUserAndId(User currentUser, int noteId) {
+	public boolean deleteNoteByUserAndId(User currentUser, Long noteId) {
 		User user = userRepository.findByEmail(currentUser.getEmail()).orElseThrow(() -> new UserNotFoundException());
 		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
 		if (note != null) {
@@ -389,7 +409,6 @@ public class NoteService {
 				Note commonNote = note.getCommonNote();
 				List<SpecificNote> noteList = specificNoteRepository.findAllByCommonNote(commonNote);
 				specificNoteRepository.deleteAllByNoteId(note.getId());
-				specificNoteRepository.deleteByCommonNoteIdAndUserId(commonNote.getId(), user.getId());
 				log.info(NoteUtils.NOTE_DELETE_SUCCESS);
 				if (noteList.size() == 1) {
 					log.info(NoteUtils.NOTE_PERMANENT_DELETE_SUCCESS);
@@ -471,6 +490,7 @@ public class NoteService {
 		setNoteDtoListItemsFromNoteListItems(noteDto, note.getListItems());
 		noteDto.setImages(note.getImages());
 		noteDto.setCreatedBy(getCollaboratorDto(note.getCreatedBy()));
+
 		if (note.getCollaboratorList() != null) {
 			List<User> collaboratorList = note.getCollaboratorList();
 			List<CollaboratorDto> collaboratorDtoList = collaboratorList.stream().map(collaboratorItem -> {
@@ -484,8 +504,11 @@ public class NoteService {
 				.findFirst().get();
 		noteDto.setId(specificNote.getId());
 		noteDto.setColor(specificNote.getColor());
-		noteDto.setUpdatedAt(specificNote.getUpdatedAt());
 		noteDto.setCreatedAt(specificNote.getCreatedAt());
+		if (note.getUpdatedAt() != null && note.getCreatedAt().compareTo(note.getUpdatedAt()) != 0) {
+			noteDto.setUpdatedAt(note.getUpdatedAt());
+			noteDto.setUpdatedBy(getCollaboratorDto(note.getUpdatedBy()));
+		}
 		if (specificNote.getLabelSet() != null) {
 			Set<Label> labelSet = specificNote.getLabelSet();
 			Set<LabelDto> labelDtoSet = labelSet.stream().map(labelItem -> {
@@ -504,17 +527,18 @@ public class NoteService {
 
 	private void setNoteDtoListItemsFromNoteListItems(NoteDto noteDto, List<ListItems> listItems) {
 		List<ListItemsDto> dtoListItems = noteDto.getListItems();
-		listItems.forEach(item -> {
-			ListItemsDto itemDto = new ListItemsDto();
-			itemDto.setContent(item.getContent());
-			itemDto.setDone(item.isDone());
-			itemDto.setId(item.getId());
-			itemDto.setOrderIndex(item.getOrderIndex());
-			itemDto.setCreatedAt(item.getCreatedAt());
-			itemDto.setUpdatedAt(item.getUpdatedAt());
-			dtoListItems.add(itemDto);
-		});
-
+		if (listItems != null) {
+			listItems.forEach(item -> {
+				ListItemsDto itemDto = new ListItemsDto();
+				itemDto.setContent(item.getContent());
+				itemDto.setDone(item.isDone());
+				itemDto.setId(item.getId());
+				itemDto.setOrderIndex(item.getOrderIndex());
+				itemDto.setCreatedAt(item.getCreatedAt());
+				itemDto.setUpdatedAt(item.getUpdatedAt());
+				dtoListItems.add(itemDto);
+			});
+		}
 	}
 
 	@Transactional
@@ -541,8 +565,6 @@ public class NoteService {
 			List<User> nonExistingCollaboratorList = collaboratorList.stream().filter(
 					collaborator -> specificNoteRepository.findByCommonNoteAndUser(mappedNote, collaborator) == null)
 					.collect(Collectors.toList());
-
-			// Adding current user also as a collaborator
 			if (user.getNoteList() != null) {
 				user.getNoteList().add(mappedNote);
 			} else {
@@ -573,7 +595,7 @@ public class NoteService {
 			} else {
 				List<User> collabList = mappedNote.getCollaboratorList();
 				collabList.addAll(nonExistingCollaboratorList);
-				collabList.add(user);
+
 			}
 		}
 		Note savedNote = noteRepository.save(mappedNote);
@@ -582,16 +604,18 @@ public class NoteService {
 
 	private void setNoteListItemsFromNoteDtoListItems(List<ListItemsDto> noteDtoListItems, Note note) {
 		List<ListItems> listItems = note.getListItems();
-		noteDtoListItems.forEach(itemDto -> {
-			ListItems item = new ListItems();
-			item.setContent(itemDto.getContent());
-			item.setDone(itemDto.isDone());
-			item.setOrderIndex(itemDto.getOrderIndex());
-			item.setId(itemDto.getId());
-			item.setCreatedAt(itemDto.getCreatedAt());
-			item.setUpdatedAt(itemDto.getUpdatedAt());
-			listItems.add(item);
-		});
+		if (noteDtoListItems != null) {
+			noteDtoListItems.forEach(itemDto -> {
+				ListItems item = new ListItems();
+				item.setContent(itemDto.getContent());
+				item.setDone(itemDto.isDone());
+				item.setOrderIndex(itemDto.getOrderIndex());
+				item.setId(itemDto.getId());
+				item.setCreatedAt(itemDto.getCreatedAt());
+				item.setUpdatedAt(itemDto.getUpdatedAt());
+				listItems.add(item);
+			});
+		}
 
 	}
 
@@ -607,9 +631,9 @@ public class NoteService {
 		specificNote.setUpdatedAt(noteDto.getUpdatedAt());
 		specificNote.setCreatedAt(noteDto.getCreatedAt());
 		if (noteDto.getLabelSet() != null) {
-			List<Integer> labelIds = noteDto.getLabelSet().stream().map(label -> label.getId())
+			List<Long> labelIds = noteDto.getLabelSet().stream().map(label -> label.getId())
 					.collect(Collectors.toList());
-			Iterable<Integer> iterableIds = labelIds;
+			Iterable<Long> iterableIds = labelIds;
 			List<Label> labelList = labelRepository.findAllById(iterableIds).stream()
 					.filter(label -> label.getUser().getEmail().equals(user.getEmail())).toList();
 			if (!labelList.isEmpty()) {
@@ -639,19 +663,13 @@ public class NoteService {
 		specificNote.setTrashed(noteDto.isTrashed());
 		specificNote.setUser(user);
 		specificNote.setCommonNote(updatedNote);
-		// Save specificNote to ensure it gets an ID
 		SpecificNote savedSpecificNote = specificNoteRepository.save(specificNote);
-
-		// Associate the saved specificNote with the Note
 		List<SpecificNote> specificNoteList = updatedNote.getSpecificNoteList();
 		if (specificNoteList == null) {
 			specificNoteList = new ArrayList<>();
 			updatedNote.setSpecificNoteList(specificNoteList);
 		}
 		specificNoteList.add(savedSpecificNote);
-
-		// Save updatedNote if needed (if there are changes to be persisted)
-//		noteRepository.save(updatedNote);
 		return updatedNote;
 	}
 

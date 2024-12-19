@@ -48,7 +48,7 @@ public class RefreshTokenService {
 		refreshTokenRepository.deleteByToken(token);
 	}
 
-	public void deleteById(Integer userId) {
-		refreshTokenRepository.deleteById(userId);
+	public void deleteById(Long id) {
+		refreshTokenRepository.deleteById(id);
 	}
 }

@@ -43,7 +43,7 @@ public class User implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(nullable = false)
-	private Integer id;
+	private Long id;
 
 	@Column(nullable = false)
 	private String fullName;
@@ -145,14 +145,6 @@ public class User implements UserDetails {
 		return password;
 	}
 
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
 	public String getFullName() {
 		return fullName;
 	}
@@ -211,6 +203,10 @@ public class User implements UserDetails {
 		return "User [id=" + id + ", fullName=" + fullName + ", email=" + email + ", password=" + password
 				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", specificNoteList=" + specificNoteList
 				+ ", noteList=" + noteList + ", labelSet=" + labelSet + ", profilePicture=" + profilePicture + "]";
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 
 }

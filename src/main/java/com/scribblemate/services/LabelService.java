@@ -68,7 +68,7 @@ public class LabelService {
 	}
 
 	@Transactional
-	public boolean deleteLabel(int labelId, User currentUser) {
+	public boolean deleteLabel(Long labelId, User currentUser) {
 		User user = userRepository.findByEmail(currentUser.getEmail()).orElseThrow(() -> new UserNotFoundException());
 		try {
 			specificNoteRepository.deleteLabelsFromLabelNote(labelId);
@@ -119,7 +119,9 @@ public class LabelService {
 		labelDto.setLabelName(savedLabel.getLabelName());
 		labelDto.setImportant(savedLabel.isImportant());
 		labelDto.setCreatedAt(savedLabel.getCreatedAt());
-		labelDto.setUpdatedAt(savedLabel.getUpdatedAt());
+		if (savedLabel.getCreatedAt().compareTo(savedLabel.getUpdatedAt()) != 0) {
+			labelDto.setUpdatedAt(savedLabel.getUpdatedAt());
+		}
 		return labelDto;
 	}
 

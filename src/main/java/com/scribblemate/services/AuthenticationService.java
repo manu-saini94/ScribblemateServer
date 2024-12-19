@@ -81,7 +81,7 @@ public class AuthenticationService {
 		List<Object[]> fieldsList = userRepository.findSpecificFieldsByEmail(input.getEmail());
 		if (fieldsList != null) {
 			for (Object[] row : fieldsList) {
-				Integer id = (Integer) row[0];
+				Long id = (Long) row[0];
 				LocalDateTime createdAt = (LocalDateTime) row[1];
 				String email = (String) row[2];
 				String fullName = (String) row[3];
