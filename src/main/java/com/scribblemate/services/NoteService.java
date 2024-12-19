@@ -505,8 +505,8 @@ public class NoteService {
 		noteDto.setId(specificNote.getId());
 		noteDto.setColor(specificNote.getColor());
 		noteDto.setCreatedAt(specificNote.getCreatedAt());
-		if (specificNote.getCreatedAt().compareTo(specificNote.getUpdatedAt()) != 0) {
-			noteDto.setUpdatedAt(specificNote.getUpdatedAt());
+		if (note.getUpdatedAt() != null && note.getCreatedAt().compareTo(note.getUpdatedAt()) != 0) {
+			noteDto.setUpdatedAt(note.getUpdatedAt());
 			noteDto.setUpdatedBy(getCollaboratorDto(note.getUpdatedBy()));
 		}
 		if (specificNote.getLabelSet() != null) {
