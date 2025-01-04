@@ -77,12 +77,10 @@ public class UserService {
 		try {
 			User user = userRepository.findByEmail(currentUser.getEmail())
 					.orElseThrow(() -> new UserNotFoundException());
-
 			if (!user.getLabelSet().isEmpty()) {
 				user.getLabelSet().forEach(label -> specificNoteRepository.deleteLabelsFromLabelNote(label.getId()));
 			}
 			labelRepository.deleteAllByUser(user);
-
 			user.getNoteList().forEach(note -> {
 				if (!note.getCollaboratorList().isEmpty()) {
 					List<User> userList = note.getCollaboratorList().stream().filter(item -> !item.equals(user))
@@ -96,7 +94,6 @@ public class UserService {
 				}
 				noteRepository.save(note);
 			});
-
 			user.getLabelSet().clear();
 			user.setStatus(Status.INACTIVE);
 			userRepository.save(user);
@@ -133,7 +130,7 @@ public class UserService {
 
 	public CollaboratorDto checkForUserExist(String email) {
 		User user = userRepository.findByEmail(email)
-				.orElseThrow(() -> new UserNotFoundException("User with email:" + email + " does not exist"));
+				.orElseThrow(() -> new UserNotFoundException("User with this email does not exist"));
 		UserResponseDto userDto = getUserDtoFromUser(user);
 		CollaboratorDto collaboratorDto = new CollaboratorDto();
 		collaboratorDto.setEmail(userDto.getEmail());
