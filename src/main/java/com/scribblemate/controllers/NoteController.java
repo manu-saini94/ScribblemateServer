@@ -49,15 +49,6 @@ public class NoteController {
 				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_PERSIST_SUCCESS, note));
 	}
 
-	@PostMapping("/add/collaborator")
-	public ResponseEntity<SuccessResponse> addCollaboratorToNote(@RequestBody CollaboratorDto collaboratorDto,
-			@RequestParam("id") Long noteId, HttpServletRequest httpRequest) {
-		User user = userService.getUserFromHttpRequest(httpRequest);
-		NoteDto note = noteService.addCollaboratorToNote(user, noteId, collaboratorDto);
-		return ResponseEntity.ok()
-				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_UPDATE_SUCCESS, note));
-	}
-
 	@PostMapping("/add/label")
 	public ResponseEntity<SuccessResponse> addLabelToNote(@RequestBody LabelDto labelDto,
 			@RequestParam("id") Long noteId, HttpServletRequest httpRequest) {
@@ -165,6 +156,15 @@ public class NoteController {
 			HttpServletRequest httpRequest) {
 		User user = userService.getUserFromHttpRequest(httpRequest);
 		NoteDto note = noteService.trashNote(user, noteId);
+		return ResponseEntity.ok()
+				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_UPDATE_SUCCESS, note));
+	}
+
+	@PostMapping("/add/collaborator")
+	public ResponseEntity<SuccessResponse> addCollaboratorToNote(@RequestBody CollaboratorDto collaboratorDto,
+			@RequestParam("id") Long noteId, HttpServletRequest httpRequest) {
+		User user = userService.getUserFromHttpRequest(httpRequest);
+		NoteDto note = noteService.addCollaboratorToNote(user, noteId, collaboratorDto);
 		return ResponseEntity.ok()
 				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_UPDATE_SUCCESS, note));
 	}

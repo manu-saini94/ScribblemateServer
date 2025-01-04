@@ -16,7 +16,10 @@ public enum ResponseErrorUtils {
 	LABEL_PERSIST_ERROR("Error occurred while persisting label"), LABELS_NOT_FOUND("Labels not found"),
 	LABEL_DELETE_ERROR("Error while deleting Labels"), LABEL_UPDATE_ERROR("Error updating Labels"),
 	LABEL_ALREADY_EXIST_ERROR("Label already Exist"), USER_NOT_DELETED("User not deleted"),
-	USER_IS_INACTIVE("User is Inactive");
+	USER_IS_INACTIVE("User is Inactive"), COLLABORATOR_DOES_NOT_EXIST_ERROR("User with this email does not exist"),
+	COLLABORATOR_ALREADY_EXIST_ERROR("User with this email already exist for note"),
+	COLLABORATOR_DELETE_ERROR("Error occurred while deleting collaborator "),
+	COLLABORATOR_ADD_ERROR("Error occurred while adding collaborator");
 
 	private final String message;
 

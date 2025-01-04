@@ -20,6 +20,8 @@ import com.scribblemate.entities.SpecificNote;
 import com.scribblemate.entities.User;
 import com.scribblemate.exceptions.labels.LabelNotDeletedException;
 import com.scribblemate.exceptions.labels.LabelNotFoundException;
+import com.scribblemate.exceptions.notes.CollaboratorAlreadyExistException;
+import com.scribblemate.exceptions.notes.CollaboratorDoesNotExistException;
 import com.scribblemate.exceptions.notes.CollaboratorNotDeletedException;
 import com.scribblemate.exceptions.notes.NoteNotDeletedException;
 import com.scribblemate.exceptions.notes.NoteNotFoundException;
@@ -33,6 +35,7 @@ import com.scribblemate.repositories.NoteRepository;
 import com.scribblemate.repositories.SpecificNoteRepository;
 import com.scribblemate.repositories.UserRepository;
 import com.scribblemate.utility.NoteUtils;
+import com.scribblemate.utility.ResponseErrorUtils;
 import com.scribblemate.utility.Utils;
 
 import jakarta.persistence.EntityManager;
@@ -97,24 +100,31 @@ public class NoteService {
 	public NoteDto addCollaboratorToNote(User user, Long noteId, CollaboratorDto collaboratorDto) {
 		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
 		if (note != null) {
+			User collaborator = userRepository.findByEmail(collaboratorDto.getEmail())
+					.orElseThrow(() -> new CollaboratorDoesNotExistException(
+							ResponseErrorUtils.COLLABORATOR_DOES_NOT_EXIST_ERROR.getMessage()));
+			Note commonNote = note.getCommonNote();
+			List<Note> noteList = collaborator.getNoteList();
+			if (noteList != null) {
+				if (noteList.contains(commonNote)) {
+					log.error(NoteUtils.COLLABORATOR_ALREADY_EXIST_ERROR);
+					throw new CollaboratorAlreadyExistException(
+							ResponseErrorUtils.COLLABORATOR_ALREADY_EXIST_ERROR.getMessage());
+				}
+				noteList.add(commonNote);
+			} else {
+				List<Note> newNoteList = new ArrayList<Note>();
+				newNoteList.add(commonNote);
+				collaborator.setNoteList(newNoteList);
+			}
+			if (commonNote.getCollaboratorList() == null) {
+				List<User> userList = new ArrayList<User>();
+				userList.add(collaborator);
+				commonNote.setCollaboratorList(userList);
+			} else {
+				commonNote.getCollaboratorList().add(collaborator);
+			}
 			try {
-				User collaborator = userRepository.findByEmail(collaboratorDto.getEmail())
-						.orElseThrow(() -> new UserNotFoundException());
-				Note commonNote = note.getCommonNote();
-				if (collaborator.getNoteList() != null) {
-					collaborator.getNoteList().add(commonNote);
-				} else {
-					List<Note> noteList = new ArrayList<Note>();
-					noteList.add(commonNote);
-					collaborator.setNoteList(noteList);
-				}
-				if (commonNote.getCollaboratorList() == null) {
-					List<User> userList = new ArrayList<User>();
-					userList.add(collaborator);
-					commonNote.setCollaboratorList(userList);
-				} else {
-					commonNote.getCollaboratorList().add(collaborator);
-				}
 				SpecificNote specificNote = new SpecificNote();
 				specificNote.setCommonNote(commonNote);
 				specificNote.setUser(collaborator);
