@@ -21,6 +21,7 @@ import com.scribblemate.exceptions.notes.NoteNotFoundException;
 import com.scribblemate.exceptions.notes.NoteNotPersistedException;
 import com.scribblemate.exceptions.notes.NoteNotUpdatedException;
 import com.scribblemate.exceptions.notes.NotesNotFoundException;
+import com.scribblemate.exceptions.users.RefreshTokenDeletionException;
 import com.scribblemate.exceptions.users.RegistrationException;
 import com.scribblemate.exceptions.users.UserAlreadyExistException;
 import com.scribblemate.exceptions.users.UserNotDeletedException;
@@ -66,6 +67,11 @@ public class GlobalExceptionController {
 	@ExceptionHandler(value = ExpiredJwtException.class)
 	public ResponseEntity<ErrorResponse> handleExpiredJwtException(ExpiredJwtException exp) {
 		return buildErrorResponse(HttpStatus.FORBIDDEN, ResponseErrorUtils.JWT_TOKEN_EXPIRED, exp.getMessage());
+	}
+	
+	@ExceptionHandler(value = RefreshTokenDeletionException.class)
+	public ResponseEntity<ErrorResponse> handleTokenDeletionException(RefreshTokenDeletionException exp) {
+		return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ResponseErrorUtils.ERROR_DELETING_TOKEN, exp.getMessage());
 	}
 
 	@ExceptionHandler(value = RegistrationException.class)
