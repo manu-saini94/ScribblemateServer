@@ -8,7 +8,7 @@ public enum ResponseErrorUtils {
 	USERNAME_OR_PASSWORD_INCORRECT("The username or password is incorrect"), ACCOUNT_IS_LOCKED("The account is locked"),
 	NOT_AUTHORIZED_TO_ACCESS("You are not authorized to access this resource"),
 	JWT_SIGNATURE_INVALID("The JWT signature is invalid"), JWT_TOKEN_EXPIRED("The JWT token has expired"),
-	REFRESH_TOKEN_EXPIRED("The Refresh token has expired"),
+	ERROR_DELETING_TOKEN("Error Deleting refresh token"), REFRESH_TOKEN_EXPIRED("The Refresh token has expired"),
 	REFRESH_TOKEN_MISSING_OR_INVALID("Refresh token is missing or invalid"),
 	INTERNAL_SERVER_ERROR("Unknown internal server error"),
 	ERROR_PERSISTING_USER("Error occurred while persisting user"), USER_NOT_FOUND("User not found"),

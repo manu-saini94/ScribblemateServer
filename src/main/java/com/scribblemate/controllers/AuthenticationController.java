@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -119,7 +120,7 @@ public class AuthenticationController {
 				ResponseSuccessUtils.USER_VALIDATION_SUCCESS, loginResponse));
 	}
 
-	@PostMapping("/logout")
+	@DeleteMapping("/logout")
 	public ResponseEntity<SuccessResponse> logoutUser(HttpServletRequest request, HttpServletResponse response) {
 		Cookie[] cookiesArray = request.getCookies();
 		User user = null;
@@ -139,17 +140,15 @@ public class AuthenticationController {
 			}
 		}
 		if (user != null) {
-			refreshTokenService.deleteById(user.getId());
+			refreshTokenService.deleteTokenForUser(user);
 		}
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth != null) {
 			new SecurityContextLogoutHandler().logout(request, response, auth);
 		}
 		SecurityContextHolder.clearContext();
-		UserResponseDto userResponseDto = userService.getUserDtoFromUser(user);
-		LoginResponse loginResponse = new LoginResponse().setUserDto(userResponseDto);
-		return ResponseEntity.ok().body(
-				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.USER_LOGOUT_SUCCESS, loginResponse));
+		return ResponseEntity.ok()
+				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.USER_LOGOUT_SUCCESS, true));
 	}
 
 }
