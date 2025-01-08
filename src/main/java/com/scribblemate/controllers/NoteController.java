@@ -38,9 +38,6 @@ public class NoteController {
 	@Autowired
 	private UserService userService;
 
-	@Autowired
-	private AuthenticationService authenticationService;
-
 	@PostMapping("/create")
 	public ResponseEntity<SuccessResponse> createNote(@RequestBody NoteDto notedto, HttpServletRequest httpRequest) {
 		User user = userService.getUserFromHttpRequest(httpRequest);
@@ -50,12 +47,21 @@ public class NoteController {
 	}
 
 	@PostMapping("/add/label")
-	public ResponseEntity<SuccessResponse> addLabelToNote(@RequestBody LabelDto labelDto,
-			@RequestParam("id") Long noteId, HttpServletRequest httpRequest) {
+	public ResponseEntity<SuccessResponse> addLabelToNote(@RequestParam("labelId") Long labelId,
+			@RequestParam("noteId") Long noteId, HttpServletRequest httpRequest) {
 		User user = userService.getUserFromHttpRequest(httpRequest);
-		NoteDto note = noteService.addLabelToNote(user, noteId, labelDto);
+		NoteDto note = noteService.addLabelToNote(user, noteId, labelId);
 		return ResponseEntity.ok()
 				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_UPDATE_SUCCESS, note));
+	}
+
+	@DeleteMapping("/delete/label")
+	public ResponseEntity<SuccessResponse> removeLabelFromNote(@RequestParam("noteId") Long noteId,
+			@RequestParam("labelId") Long labelId, HttpServletRequest httpRequest) {
+		User user = userService.getUserFromHttpRequest(httpRequest);
+		NoteDto note = noteService.deleteLabelFromNote(user, noteId, labelId);
+		return ResponseEntity.ok().body(
+				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.COLLABORATOR_DELETE_SUCCESS, note));
 	}
 
 	@PostMapping("/add/new/label")
@@ -161,10 +167,11 @@ public class NoteController {
 	}
 
 	@PostMapping("/add/collaborator")
-	public ResponseEntity<SuccessResponse> addCollaboratorToNote(@RequestBody CollaboratorDto collaboratorDto,
-			@RequestParam("id") Long noteId, HttpServletRequest httpRequest) {
+	public ResponseEntity<SuccessResponse> addCollaboratorToNote(
+			@RequestParam("collaboratorId") String collaboratorEmail, @RequestParam("noteId") Long noteId,
+			HttpServletRequest httpRequest) {
 		User user = userService.getUserFromHttpRequest(httpRequest);
-		NoteDto note = noteService.addCollaboratorToNote(user, noteId, collaboratorDto);
+		NoteDto note = noteService.addCollaboratorToNote(user, noteId, collaboratorEmail);
 		return ResponseEntity.ok()
 				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_UPDATE_SUCCESS, note));
 	}
@@ -186,15 +193,6 @@ public class NoteController {
 		boolean isDeleted = noteService.deleteNoteByUserAndId(user, noteId);
 		return ResponseEntity.ok()
 				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_DELETE_SUCCESS, isDeleted));
-	}
-
-	@DeleteMapping("/delete/label")
-	public ResponseEntity<SuccessResponse> removeLabelFromNote(@RequestParam("noteId") Long noteId,
-			@RequestParam("labelId") Long labelId, HttpServletRequest httpRequest) {
-		User user = userService.getUserFromHttpRequest(httpRequest);
-		NoteDto note = noteService.deleteLabelFromNote(user, noteId, labelId);
-		return ResponseEntity.ok().body(
-				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.COLLABORATOR_DELETE_SUCCESS, note));
 	}
 
 }
