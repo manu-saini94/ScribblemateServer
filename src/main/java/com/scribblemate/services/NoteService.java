@@ -97,10 +97,10 @@ public class NoteService {
 	}
 
 	@Transactional
-	public NoteDto addCollaboratorToNote(User user, Long noteId, CollaboratorDto collaboratorDto) {
+	public NoteDto addCollaboratorToNote(User user, Long noteId, String collaboratorEmail) {
 		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
 		if (note != null) {
-			User collaborator = userRepository.findByEmail(collaboratorDto.getEmail())
+			User collaborator = userRepository.findByEmail(collaboratorEmail)
 					.orElseThrow(() -> new CollaboratorDoesNotExistException(
 							ResponseErrorUtils.COLLABORATOR_DOES_NOT_EXIST_ERROR.getMessage()));
 			Note commonNote = note.getCommonNote();
@@ -182,12 +182,11 @@ public class NoteService {
 		}
 	}
 
-	public NoteDto addLabelToNote(User user, Long noteId, LabelDto labelDto) {
+	public NoteDto addLabelToNote(User user, Long noteId, Long labelId) {
 		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
 		if (note != null) {
 			try {
-				Label label = labelRepository.findById(labelDto.getId())
-						.orElseThrow(() -> new LabelNotFoundException());
+				Label label = labelRepository.findById(labelId).orElseThrow(() -> new LabelNotFoundException());
 				if (note.getLabelSet() == null) {
 					Set<Label> labelSet = new HashSet<Label>();
 					labelSet.add(label);
@@ -219,7 +218,7 @@ public class NoteService {
 
 	public NoteDto addNewLabelToNote(User user, Long noteId, LabelDto labelDto) {
 		LabelDto newlabelDto = labelService.createNewLabel(labelDto, user);
-		return addLabelToNote(user, noteId, newlabelDto);
+		return addLabelToNote(user, noteId, newlabelDto.getId());
 	}
 
 	public NoteDto deleteLabelFromNote(User user, Long noteId, Long labelId) {
