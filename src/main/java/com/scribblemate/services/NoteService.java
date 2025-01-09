@@ -150,16 +150,17 @@ public class NoteService {
 	}
 
 	@Transactional
-	public NoteDto deleteCollaboratorFromNote(User user, Long noteId, Long collaboratorId) {
+	public NoteDto deleteCollaboratorFromNote(User user, Long noteId, String collaboratorEmail) {
 		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
 		if (note != null) {
 			try {
-				User collaborator = userRepository.findById(collaboratorId)
+				User collaborator = userRepository.findByEmail(collaboratorEmail)
 						.orElseThrow(() -> new UserNotFoundException());
 				Note commonNote = note.getCommonNote();
 				SpecificNote collabNote = specificNoteRepository.findByCommonNoteAndUser(commonNote, collaborator);
 				specificNoteRepository.deleteAllByNoteId(collabNote.getId());
-				specificNoteRepository.deleteCollaboratorByUserIdAndCommonNoteId(collaboratorId, commonNote.getId());
+				specificNoteRepository.deleteCollaboratorByUserIdAndCommonNoteId(collaborator.getId(),
+						commonNote.getId());
 				specificNoteRepository.deleteByCommonNoteIdAndUserId(commonNote.getId(), collaborator.getId());
 
 				// Flush the session to ensure changes are persisted
@@ -167,12 +168,12 @@ public class NoteService {
 				// Clear the persistence context to detach all entities
 				entityManager.clear();
 
-				log.info(NoteUtils.COLLABORATOR_DELETE_SUCCESS, collaboratorId);
+				log.info(NoteUtils.COLLABORATOR_DELETE_SUCCESS, collaborator.getId());
 				SpecificNote updatedNote = specificNoteRepository.findByIdAndUser(noteId, user);
 				Note updatedCommonNote = updatedNote.getCommonNote();
 				return setNoteDtoFromNote(updatedCommonNote, user);
 			} catch (Exception ex) {
-				log.error(NoteUtils.COLLABORATOR_DELETE_ERROR, collaboratorId,
+				log.error(NoteUtils.COLLABORATOR_DELETE_ERROR, collaboratorEmail,
 						new CollaboratorNotDeletedException(ex.getMessage()));
 				throw new CollaboratorNotDeletedException(ex.getMessage());
 			}
