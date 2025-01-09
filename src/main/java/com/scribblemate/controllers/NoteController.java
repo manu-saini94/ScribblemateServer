@@ -168,7 +168,7 @@ public class NoteController {
 
 	@PostMapping("/add/collaborator")
 	public ResponseEntity<SuccessResponse> addCollaboratorToNote(
-			@RequestParam("collaboratorId") String collaboratorEmail, @RequestParam("noteId") Long noteId,
+			@RequestParam("collaboratorEmail") String collaboratorEmail, @RequestParam("noteId") Long noteId,
 			HttpServletRequest httpRequest) {
 		User user = userService.getUserFromHttpRequest(httpRequest);
 		NoteDto note = noteService.addCollaboratorToNote(user, noteId, collaboratorEmail);
@@ -178,9 +178,9 @@ public class NoteController {
 
 	@DeleteMapping("/delete/collaborator")
 	public ResponseEntity<SuccessResponse> removeCollaboratorFromNote(@RequestParam("noteId") Long noteId,
-			@RequestParam("collaboratorId") Long collaboratorId, HttpServletRequest httpRequest) {
+			@RequestParam("collaboratorEmail") String collaboratorEmail, HttpServletRequest httpRequest) {
 		User user = userService.getUserFromHttpRequest(httpRequest);
-		NoteDto note = noteService.deleteCollaboratorFromNote(user, noteId, collaboratorId);
+		NoteDto note = noteService.deleteCollaboratorFromNote(user, noteId, collaboratorEmail);
 		return ResponseEntity.ok().body(
 				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.COLLABORATOR_DELETE_SUCCESS, note));
 	}
