@@ -1,8 +1,10 @@
 package com.scribblemate.services;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -257,7 +259,7 @@ public class NoteService {
 		}
 	}
 
-	public List<NoteDto> getAllNotesByUser(User user) {
+	public List<NoteDto> getAllNotesNonTrashedNonArchivedByUser(User user) {
 		try {
 			List<SpecificNote> noteList = specificNoteRepository
 					.findAllByUserAndIsTrashedFalseAndIsArchivedFalseOrderByCommonNoteCreatedAtDesc(user);
@@ -272,14 +274,27 @@ public class NoteService {
 
 	public List<NoteDto> getAllNotesWithLabelsByUser(User user) {
 		// TODO Auto-generated method stub
-		List<NoteDto> noteDtoList = getAllNotesByUser(user);
+		List<NoteDto> noteDtoList = getAllNotesForUser(user);
 		List<NoteDto> notesWithLabels = noteDtoList.stream().filter(noteDto -> {
 			return !noteDto.getLabelSet().isEmpty();
 		}).collect(Collectors.toList());
 		return notesWithLabels;
 	}
 
-	public List<NoteDto> getAllNotesByUserAndLabelId(User user, Long labelId) {
+	public Map<Long, List<Long>> getAllNotesByUserAndLabelIds(User user) {
+		List<NoteDto> notesWithLabels = getAllNotesWithLabelsByUser(user);
+		List<Long> labelIds = labelRepository.getLabelIdsByUser(user.getId());
+		Map<Long, List<Long>> notesMap = new HashMap<>();
+		labelIds.forEach(id -> {
+			notesMap.put(id, notesWithLabels.stream().filter(note -> {
+				Set<LabelDto> labelSet = note.getLabelSet();
+				return labelSet.stream().anyMatch(label -> label.getId() == id);
+			}).map(note -> note.getId()).collect(Collectors.toList()));
+		});
+		return notesMap;
+	}
+
+	public List<NoteDto> getNotesByUserAndLabelId(User user, Long labelId) {
 		try {
 			Label label = labelRepository.findById(labelId).get();
 			List<SpecificNote> noteList = specificNoteRepository.findByUserAndLabelOrderByCommonNoteCreatedAtDesc(user,

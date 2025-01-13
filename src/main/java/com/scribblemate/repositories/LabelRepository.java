@@ -28,4 +28,7 @@ public interface LabelRepository extends JpaRepository<Label, Long> {
 	@Transactional
 	void deleteAllByUser(User user);
 
+	@Query(value = "SELECT id from label WHERE user_id = :userId", nativeQuery = true)
+	List<Long> getLabelIdsByUser(@Param("userId") Long userId);
+
 }

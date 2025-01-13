@@ -1,6 +1,7 @@
 package com.scribblemate.controllers;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,18 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.scribblemate.dto.CollaboratorDto;
 import com.scribblemate.dto.ColorUpdateDto;
 import com.scribblemate.dto.LabelDto;
 import com.scribblemate.dto.NoteDto;
 import com.scribblemate.entities.User;
 import com.scribblemate.responses.SuccessResponse;
-import com.scribblemate.services.AuthenticationService;
 import com.scribblemate.services.NoteService;
 import com.scribblemate.services.UserService;
 import com.scribblemate.utility.ResponseSuccessUtils;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping("/api/v1/note")
@@ -81,16 +78,24 @@ public class NoteController {
 				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_FETCHING_SUCCESS, notesList));
 	}
 
-	@GetMapping("/get/label")
-	public ResponseEntity<SuccessResponse> getAllNotesByLabel(@RequestParam("labelId") Long labelId,
+	@GetMapping("/label")
+	public ResponseEntity<SuccessResponse> getNotesByLabel(@RequestParam("labelId") Long labelId,
 			HttpServletRequest httpRequest) {
 		User user = userService.getUserFromHttpRequest(httpRequest);
-		List<NoteDto> notesList = noteService.getAllNotesByUserAndLabelId(user, labelId);
+		List<NoteDto> notesList = noteService.getNotesByUserAndLabelId(user, labelId);
 		return ResponseEntity.ok().body(
 				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_FETCHING_SUCCESS, notesList));
 	}
 
-	@GetMapping("/get/label/all")
+	@GetMapping("/label/all")
+	public ResponseEntity<SuccessResponse> getAllNotesByLabelIds(HttpServletRequest httpRequest) {
+		User user = userService.getUserFromHttpRequest(httpRequest);
+		Map<Long, List<Long>> notesMap = noteService.getAllNotesByUserAndLabelIds(user);
+		return ResponseEntity.ok()
+				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_FETCHING_SUCCESS, notesMap));
+	}
+
+	@GetMapping("/labelled")
 	public ResponseEntity<SuccessResponse> getAllNotesWithLabels(HttpServletRequest httpRequest) {
 		User user = userService.getUserFromHttpRequest(httpRequest);
 		List<NoteDto> notesList = noteService.getAllNotesWithLabelsByUser(user);
