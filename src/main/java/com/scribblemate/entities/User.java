@@ -198,13 +198,6 @@ public class User implements UserDetails {
 		return Objects.equals(email, other.email);
 	}
 
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", fullName=" + fullName + ", email=" + email + ", password=" + password
-				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", specificNoteList=" + specificNoteList
-				+ ", noteList=" + noteList + ", labelSet=" + labelSet + ", profilePicture=" + profilePicture + "]";
-	}
-
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
