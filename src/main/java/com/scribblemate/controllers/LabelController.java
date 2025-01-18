@@ -50,7 +50,7 @@ public class LabelController {
 				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.LABEL_UPDATE_SUCCESS, updatedLabelDto));
 	}
 
-	@GetMapping("/get")
+	@GetMapping("/all")
 	public ResponseEntity<SuccessResponse> getAllLabelsByUser(HttpServletRequest httpRequest) {
 		User user = userService.getUserFromHttpRequest(httpRequest);
 		List<LabelDto> labelList = labelService.getLabelsByUser(user);

@@ -12,6 +12,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -24,7 +25,8 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "specific_note")
+@Table(name = "specific_note", indexes = { @Index(name = "index_user", columnList = "userId"),
+		@Index(name = "index_common_note", columnList = "commonNoteId") })
 @Getter
 @Setter
 @SuperBuilder

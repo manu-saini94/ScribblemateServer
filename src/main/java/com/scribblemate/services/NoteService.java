@@ -82,7 +82,7 @@ public class NoteService {
 	}
 
 	public NoteDto updateExistingNote(NoteDto noteDto, User user) {
-		SpecificNote note = specificNoteRepository.findByIdAndUser(noteDto.getId(), user);
+		SpecificNote note = specificNoteRepository.findById(noteDto.getId());
 		if (note != null) {
 			try {
 				Note savedNote = setSpecificNoteFromNoteDto(noteDto, note, user);
@@ -100,7 +100,7 @@ public class NoteService {
 
 	@Transactional
 	public NoteDto addCollaboratorToNote(User user, Long noteId, String collaboratorEmail) {
-		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
+		SpecificNote note = specificNoteRepository.findById(noteId);
 		if (note != null) {
 			User collaborator = userRepository.findByEmail(collaboratorEmail)
 					.orElseThrow(() -> new CollaboratorDoesNotExistException(
@@ -153,7 +153,7 @@ public class NoteService {
 
 	@Transactional
 	public NoteDto deleteCollaboratorFromNote(User user, Long noteId, String collaboratorEmail) {
-		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
+		SpecificNote note = specificNoteRepository.findById(noteId);
 		if (note != null) {
 			try {
 				User collaborator = userRepository.findByEmail(collaboratorEmail)
@@ -171,7 +171,7 @@ public class NoteService {
 				entityManager.clear();
 
 				log.info(NoteUtils.COLLABORATOR_DELETE_SUCCESS, collaborator.getId());
-				SpecificNote updatedNote = specificNoteRepository.findByIdAndUser(noteId, user);
+				SpecificNote updatedNote = specificNoteRepository.findById(noteId);
 				Note updatedCommonNote = updatedNote.getCommonNote();
 				return setNoteDtoFromNote(updatedCommonNote, user);
 			} catch (Exception ex) {
@@ -186,7 +186,7 @@ public class NoteService {
 	}
 
 	public NoteDto addLabelToNote(User user, Long noteId, Long labelId) {
-		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
+		SpecificNote note = specificNoteRepository.findById(noteId);
 		if (note != null) {
 			try {
 				Label label = labelRepository.findById(labelId).orElseThrow(() -> new LabelNotFoundException());
@@ -225,7 +225,7 @@ public class NoteService {
 	}
 
 	public NoteDto deleteLabelFromNote(User user, Long noteId, Long labelId) {
-		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
+		SpecificNote note = specificNoteRepository.findById(noteId);
 		if (note != null) {
 			try {
 				Set<Label> labelSet = note.getLabelSet();
@@ -344,7 +344,7 @@ public class NoteService {
 	}
 
 	public NoteDto updateColorOfNote(User user, ColorUpdateDto colorDto) {
-		SpecificNote note = specificNoteRepository.findByIdAndUser(colorDto.getNoteId(), user);
+		SpecificNote note = specificNoteRepository.findById(colorDto.getNoteId());
 		if (note != null) {
 			try {
 				note.setColor(colorDto.getColor());
@@ -363,7 +363,7 @@ public class NoteService {
 	}
 
 	public NoteDto pinNote(User user, Long noteId) {
-		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
+		SpecificNote note = specificNoteRepository.findById(noteId);
 		if (note != null) {
 			try {
 				note.setArchived(false);
@@ -384,7 +384,7 @@ public class NoteService {
 	}
 
 	public NoteDto archiveNote(User user, Long noteId) {
-		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
+		SpecificNote note = specificNoteRepository.findById(noteId);
 		if (note != null) {
 			try {
 				note.setArchived(!note.isArchived());
@@ -405,7 +405,7 @@ public class NoteService {
 	}
 
 	public NoteDto trashNote(User user, Long noteId) {
-		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
+		SpecificNote note = specificNoteRepository.findById(noteId);
 		if (note != null) {
 			try {
 				note.setArchived(false);
@@ -428,7 +428,7 @@ public class NoteService {
 	@Transactional
 	public boolean deleteNoteByUserAndId(User currentUser, Long noteId) {
 		User user = userRepository.findByEmail(currentUser.getEmail()).orElseThrow(() -> new UserNotFoundException());
-		SpecificNote note = specificNoteRepository.findByIdAndUser(noteId, user);
+		SpecificNote note = specificNoteRepository.findById(noteId);
 		if (note != null) {
 			try {
 				Note commonNote = note.getCommonNote();
