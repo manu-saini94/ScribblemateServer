@@ -18,7 +18,7 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface SpecificNoteRepository extends JpaRepository<SpecificNote, Integer> {
 
-	SpecificNote findByIdAndUser(Long id, User user);
+	SpecificNote findById(Long id);
 
 	List<SpecificNote> findAllByUserAndIsTrashedFalseAndIsArchivedFalseOrderByCommonNoteCreatedAtDesc(User user);
 
@@ -29,11 +29,6 @@ public interface SpecificNoteRepository extends JpaRepository<SpecificNote, Inte
 	@Query("SELECT sn FROM SpecificNote sn JOIN sn.labelSet ls WHERE sn.user = :user AND ls = :label")
 	List<SpecificNote> findByUserAndLabelOrderByCommonNoteCreatedAtDesc(@Param("user") User user,
 			@Param("label") Label label);
-
-	@Transactional
-	@Modifying
-	@Query("UPDATE SpecificNote sn SET sn.isPinned = :isPinned WHERE sn.commonNote.id = :noteId AND sn.user = :user")
-	int updatePinStatus(@Param("isPinned") boolean isPinned, @Param("noteId") Integer noteId, @Param("user") User user);
 
 	List<SpecificNote> findAllByUserAndIsTrashedTrueOrderByUpdatedAtDesc(User user);
 
