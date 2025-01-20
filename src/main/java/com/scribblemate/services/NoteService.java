@@ -283,6 +283,7 @@ public class NoteService {
 
 	public Map<Long, List<Long>> getAllNotesByUserAndLabelIds(User user) {
 		List<NoteDto> notesWithLabels = getAllNotesWithLabelsByUser(user);
+		List<Long> notesWithLabelsIds = notesWithLabels.stream().map(note-> note.getId()).collect(Collectors.toList());
 		List<Long> labelIds = labelRepository.getLabelIdsByUser(user.getId());
 		Map<Long, List<Long>> notesMap = new HashMap<>();
 		labelIds.forEach(id -> {
@@ -291,6 +292,7 @@ public class NoteService {
 				return labelSet.stream().anyMatch(label -> label.getId() == id);
 			}).map(note -> note.getId()).collect(Collectors.toList()));
 		});
+		notesMap.put((long) 0, notesWithLabelsIds);
 		return notesMap;
 	}
 
