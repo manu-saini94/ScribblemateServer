@@ -7,6 +7,9 @@ import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.scribblemate.exceptions.auth.TokenDeletionException;
+import com.scribblemate.exceptions.auth.TokenExpiredException;
+import com.scribblemate.exceptions.auth.TokenMissingOrInvalidException;
 import com.scribblemate.exceptions.labels.LabelAlreadyExistException;
 import com.scribblemate.exceptions.labels.LabelNotDeletedException;
 import com.scribblemate.exceptions.labels.LabelNotFoundException;
@@ -21,14 +24,12 @@ import com.scribblemate.exceptions.notes.NoteNotFoundException;
 import com.scribblemate.exceptions.notes.NoteNotPersistedException;
 import com.scribblemate.exceptions.notes.NoteNotUpdatedException;
 import com.scribblemate.exceptions.notes.NotesNotFoundException;
-import com.scribblemate.exceptions.users.RefreshTokenDeletionException;
 import com.scribblemate.exceptions.users.RegistrationException;
 import com.scribblemate.exceptions.users.UserAlreadyExistException;
 import com.scribblemate.exceptions.users.UserNotDeletedException;
 import com.scribblemate.exceptions.users.UserNotFoundException;
 import com.scribblemate.responses.ErrorResponse;
 import com.scribblemate.utility.ResponseErrorUtils;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,16 +63,6 @@ public class GlobalExceptionController {
 	@ExceptionHandler(value = SignatureException.class)
 	public ResponseEntity<ErrorResponse> handleSignatureException(SignatureException exp) {
 		return buildErrorResponse(HttpStatus.FORBIDDEN, ResponseErrorUtils.JWT_SIGNATURE_INVALID, exp.getMessage());
-	}
-
-	@ExceptionHandler(value = ExpiredJwtException.class)
-	public ResponseEntity<ErrorResponse> handleExpiredJwtException(ExpiredJwtException exp) {
-		return buildErrorResponse(HttpStatus.FORBIDDEN, ResponseErrorUtils.JWT_TOKEN_EXPIRED, exp.getMessage());
-	}
-	
-	@ExceptionHandler(value = RefreshTokenDeletionException.class)
-	public ResponseEntity<ErrorResponse> handleTokenDeletionException(RefreshTokenDeletionException exp) {
-		return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ResponseErrorUtils.ERROR_DELETING_TOKEN, exp.getMessage());
 	}
 
 	@ExceptionHandler(value = RegistrationException.class)
@@ -174,24 +165,28 @@ public class GlobalExceptionController {
 		return buildErrorResponse(HttpStatus.CONFLICT, ResponseErrorUtils.LABEL_ALREADY_EXIST_ERROR, exp.getMessage());
 	}
 
+	@ExceptionHandler(value = TokenMissingOrInvalidException.class)
+	public ResponseEntity<ErrorResponse> handleTokenMissingOrInvalidException(TokenMissingOrInvalidException exp) {
+		return buildErrorResponse(HttpStatus.UNAUTHORIZED, ResponseErrorUtils.TOKEN_MISSING_OR_INVALID,
+				exp.getMessage());
+	}
+
+	@ExceptionHandler(value = TokenExpiredException.class)
+	public ResponseEntity<ErrorResponse> handleTokenExpiredException(TokenExpiredException exp) {
+		return buildErrorResponse(HttpStatus.FORBIDDEN, ResponseErrorUtils.TOKEN_EXPIRED, exp.getMessage());
+	}
+
+	@ExceptionHandler(value = TokenDeletionException.class)
+	public ResponseEntity<ErrorResponse> handleTokenDeletionException(TokenDeletionException exp) {
+		return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ResponseErrorUtils.TOKEN_DELETION_FAILED,
+				exp.getMessage());
+	}
+
 	@ExceptionHandler(value = Exception.class)
 	public ResponseEntity<ErrorResponse> handleGenericException(Exception exp) {
 		log.error("An unexpected error occurred", exp);
 		return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ResponseErrorUtils.INTERNAL_SERVER_ERROR,
 				exp.getMessage());
 	}
-
-	/*
-	 * @ExceptionHandler(value = UserInactiveException.class) public
-	 * ResponseEntity<ErrorResponse>
-	 * handleUserInactiveException(UserInactiveException exp) { return
-	 * buildErrorResponse(HttpStatus.FORBIDDEN, ResponseErrorUtils.USER_IS_INACTIVE,
-	 * exp.getMessage()); }
-	 * 
-	 * @ExceptionHandler(value = InternalServerError.class) public
-	 * ResponseEntity<ErrorResponse> handleInternalServerError(InternalServerError
-	 * exp) { return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
-	 * ResponseErrorUtils.INTERNAL_SERVER_ERROR, exp.getMessage()); }
-	 */
 
 }

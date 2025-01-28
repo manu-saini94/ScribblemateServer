@@ -9,15 +9,18 @@ import com.scribblemate.dto.CollaboratorDto;
 import com.scribblemate.dto.UserResponseDto;
 import com.scribblemate.entities.SpecificNote;
 import com.scribblemate.entities.User;
+import com.scribblemate.exceptions.auth.TokenExpiredException;
+import com.scribblemate.exceptions.auth.TokenMissingOrInvalidException;
 import com.scribblemate.exceptions.users.UserNotDeletedException;
 import com.scribblemate.exceptions.users.UserNotFoundException;
 import com.scribblemate.repositories.LabelRepository;
 import com.scribblemate.repositories.NoteRepository;
 import com.scribblemate.repositories.SpecificNoteRepository;
 import com.scribblemate.repositories.UserRepository;
-import com.scribblemate.responses.LoginResponse;
 import com.scribblemate.utility.NoteUtils;
 import com.scribblemate.utility.Utils.Status;
+import com.scribblemate.utility.Utils.TokenType;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -52,15 +55,32 @@ public class UserService {
 	public User getUserFromHttpRequest(HttpServletRequest httpRequest) {
 		Cookie[] cookiesArray = httpRequest.getCookies();
 		String accessTokenString = null;
+		String refreshTokenString = null;
 		if (cookiesArray != null) {
 			for (Cookie cookie : cookiesArray) {
-				if ("accessToken".equals(cookie.getName())) {
+				if (TokenType.ACCESS_TOKEN.getValue().equals(cookie.getName())) {
 					accessTokenString = cookie.getValue();
+					if (accessTokenString == null) {
+						throw new TokenMissingOrInvalidException("Access token not found in request cookies");
+					} else if (!jwtService.isAccessToken(accessTokenString)) {
+						throw new TokenMissingOrInvalidException("Access token is Invalid!");
+					} else if (jwtService.isTokenExpired(accessTokenString)) {
+						throw new TokenExpiredException("Access token has expired!");
+					}
+
+				} else if (TokenType.REFRESH_TOKEN.getValue().equals(cookie.getName())) {
+					refreshTokenString = cookie.getValue();
+					if (refreshTokenString == null) {
+						throw new TokenMissingOrInvalidException("Refresh token not found in request cookies");
+					} else if (!jwtService.isRefreshToken(refreshTokenString)) {
+						throw new TokenMissingOrInvalidException("Refresh token is Invalid!");
+					} else if (jwtService.isTokenExpired(refreshTokenString)) {
+						throw new TokenExpiredException("Refresh token has expired!");
+					}
 				}
 			}
-		}
-		if (accessTokenString == null) {
-			throw new UserNotFoundException("Access token not found in request cookies");
+		} else {
+			throw new TokenMissingOrInvalidException("Cookies are missing from the request");
 		}
 		return getUserFromJwt(accessTokenString);
 	}
@@ -107,6 +127,7 @@ public class UserService {
 
 	public UserResponseDto getUserDtoFromUser(User user) {
 		UserResponseDto userDto = new UserResponseDto();
+		userDto.setId(user.getId());
 		userDto.setEmail(user.getEmail());
 		userDto.setFullName(user.getFullName());
 		userDto.setProfilePicture(user.getProfilePicture());
@@ -116,17 +137,7 @@ public class UserService {
 		return userDto;
 	}
 
-	public LoginResponse getLoginResponseFromUser(User user) {
-		LoginResponse loginResponse = new LoginResponse();
-		UserResponseDto userDto = new UserResponseDto();
-		userDto.setEmail(user.getEmail());
-		userDto.setFullName(user.getFullName());
-		userDto.setProfilePicture(user.getProfilePicture());
-		userDto.setStatus(user.getStatus());
-		userDto.setCreatedAt(user.getCreatedAt());
-		userDto.setUpdatedAt(user.getUpdatedAt());
-		return loginResponse;
-	}
+
 
 	public CollaboratorDto checkForUserExist(String email) {
 		User user = userRepository.findByEmail(email)
