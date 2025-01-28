@@ -35,6 +35,20 @@ public class Utils {
 		}
 	}
 
+	public enum TokenType {
+		ACCESS_TOKEN("accessToken"), REFRESH_TOKEN("refreshToken");
+
+		private final String value;
+
+		TokenType(String value) {
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+	}
+
 	public static String formatSafe(String format, Object... args) {
 		try {
 			return String.format(format, args);

@@ -103,6 +103,15 @@ public class NoteController {
 				new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_FETCHING_SUCCESS, notesList));
 	}
 
+	@GetMapping("/get")
+	public ResponseEntity<SuccessResponse> getNote(HttpServletRequest httpRequest,
+			@RequestParam("noteId") Long noteId) {
+		User user = userService.getUserFromHttpRequest(httpRequest);
+		NoteDto note = noteService.getNoteById(user, noteId);
+		return ResponseEntity.ok()
+				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.NOTE_FETCHING_SUCCESS, note));
+	}
+
 	@GetMapping("/get/trash")
 	public ResponseEntity<SuccessResponse> getAllTrashedNotes(HttpServletRequest httpRequest) {
 		User user = userService.getUserFromHttpRequest(httpRequest);

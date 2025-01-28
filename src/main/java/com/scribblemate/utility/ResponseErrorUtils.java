@@ -7,7 +7,6 @@ public enum ResponseErrorUtils {
 	ERROR_FETCHING_NOTES_FOR_USER("Error occurred while fetching notes for user"),
 	USERNAME_OR_PASSWORD_INCORRECT("The username or password is incorrect"), ACCOUNT_IS_LOCKED("The account is locked"),
 	NOT_AUTHORIZED_TO_ACCESS("You are not authorized to access this resource"),
-	JWT_SIGNATURE_INVALID("The JWT signature is invalid"), JWT_TOKEN_EXPIRED("The JWT token has expired"),
 	ERROR_DELETING_TOKEN("Error Deleting refresh token"), REFRESH_TOKEN_EXPIRED("The Refresh token has expired"),
 	REFRESH_TOKEN_MISSING_OR_INVALID("Refresh token is missing or invalid"),
 	INTERNAL_SERVER_ERROR("Unknown internal server error"),
@@ -19,7 +18,9 @@ public enum ResponseErrorUtils {
 	USER_IS_INACTIVE("User is Inactive"), COLLABORATOR_DOES_NOT_EXIST_ERROR("User with this email does not exist"),
 	COLLABORATOR_ALREADY_EXIST_ERROR("User with this email already exist for note"),
 	COLLABORATOR_DELETE_ERROR("Error occurred while deleting collaborator "),
-	COLLABORATOR_ADD_ERROR("Error occurred while adding collaborator");
+	COLLABORATOR_ADD_ERROR("Error occurred while adding collaborator"), TOKEN_EXPIRED("The JWT token has expired"),
+	JWT_SIGNATURE_INVALID("The JWT signature is invalid"), TOKEN_MISSING_OR_INVALID("Token is missing or invalid"),
+	TOKEN_DELETION_FAILED("Token deletion failed!");
 
 	private final String message;
 
