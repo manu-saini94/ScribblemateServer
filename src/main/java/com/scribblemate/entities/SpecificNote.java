@@ -57,7 +57,7 @@ public class SpecificNote extends CommonFields {
 	@Column(name = "role")
 	private Role role;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(cascade = { CascadeType.ALL })
 	private User user;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.REMOVE })

@@ -1,6 +1,7 @@
 package com.scribblemate.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,9 +17,9 @@ import com.scribblemate.entities.User;
 import jakarta.transaction.Transactional;
 
 @Repository
-public interface SpecificNoteRepository extends JpaRepository<SpecificNote, Integer> {
+public interface SpecificNoteRepository extends JpaRepository<SpecificNote, Long> {
 
-	SpecificNote findById(Long id);
+	Optional<SpecificNote> findById(Long id);
 
 	List<SpecificNote> findAllByUserAndIsTrashedFalseAndIsArchivedFalseOrderByCommonNoteCreatedAtDesc(User user);
 
