@@ -82,7 +82,7 @@ public class NoteService {
 	}
 
 	public NoteDto updateExistingNote(NoteDto noteDto, User user) {
-		SpecificNote note = specificNoteRepository.findById(noteDto.getId());
+		SpecificNote note = specificNoteRepository.findById(noteDto.getId()).get();
 		if (note != null) {
 			try {
 				Note savedNote = setSpecificNoteFromNoteDto(noteDto, note, user);
@@ -100,7 +100,7 @@ public class NoteService {
 
 	@Transactional
 	public NoteDto addCollaboratorToNote(User user, Long noteId, String collaboratorEmail) {
-		SpecificNote note = specificNoteRepository.findById(noteId);
+		SpecificNote note = specificNoteRepository.findById(noteId).get();
 		if (note != null) {
 			User collaborator = userRepository.findByEmail(collaboratorEmail)
 					.orElseThrow(() -> new CollaboratorDoesNotExistException(
@@ -153,7 +153,7 @@ public class NoteService {
 
 	@Transactional
 	public NoteDto deleteCollaboratorFromNote(User user, Long noteId, String collaboratorEmail) {
-		SpecificNote note = specificNoteRepository.findById(noteId);
+		SpecificNote note = specificNoteRepository.findById(noteId).get();
 		if (note != null) {
 			try {
 				User collaborator = userRepository.findByEmail(collaboratorEmail)
@@ -171,7 +171,7 @@ public class NoteService {
 				entityManager.clear();
 
 				log.info(NoteUtils.COLLABORATOR_DELETE_SUCCESS, collaborator.getId());
-				SpecificNote updatedNote = specificNoteRepository.findById(noteId);
+				SpecificNote updatedNote = specificNoteRepository.findById(noteId).get();
 				Note updatedCommonNote = updatedNote.getCommonNote();
 				return setNoteDtoFromNote(updatedCommonNote, user);
 			} catch (Exception ex) {
@@ -186,7 +186,7 @@ public class NoteService {
 	}
 
 	public NoteDto addLabelToNote(User user, Long noteId, Long labelId) {
-		SpecificNote note = specificNoteRepository.findById(noteId);
+		SpecificNote note = specificNoteRepository.findById(noteId).get();
 		if (note != null) {
 			try {
 				Label label = labelRepository.findById(labelId).orElseThrow(() -> new LabelNotFoundException());
@@ -205,10 +205,9 @@ public class NoteService {
 					noteList.add(note);
 					label.setNoteList(noteList);
 				}
-				SpecificNote savedNote = specificNoteRepository.save(note);
-				log.info(NoteUtils.NOTE_UPDATE_SUCCESS, savedNote);
-				Note commonNote = savedNote.getCommonNote();
-				return setNoteDtoFromNote(commonNote, user);
+				NoteDto noteDto = saveNoteAndReturnDto(user, note);
+				log.info(NoteUtils.NOTE_UPDATE_SUCCESS);
+				return noteDto;
 			} catch (Exception ex) {
 				log.error(NoteUtils.NOTE_UPDATE_ERROR, new NoteNotUpdatedException(ex.getMessage()));
 				throw new NoteNotUpdatedException(ex.getMessage());
@@ -225,7 +224,7 @@ public class NoteService {
 	}
 
 	public NoteDto deleteLabelFromNote(User user, Long noteId, Long labelId) {
-		SpecificNote note = specificNoteRepository.findById(noteId);
+		SpecificNote note = specificNoteRepository.findById(noteId).get();
 		if (note != null) {
 			try {
 				Set<Label> labelSet = note.getLabelSet();
@@ -233,10 +232,9 @@ public class NoteService {
 					return !label.getId().equals(labelId);
 				}).collect(Collectors.toSet());
 				note.setLabelSet(filteredLabelSet);
-				SpecificNote savedNote = specificNoteRepository.save(note);
-				Note commonNote = savedNote.getCommonNote();
+				NoteDto noteDto = saveNoteAndReturnDto(user, note);
 				log.info(NoteUtils.LABEL_DELETE_SUCCESS, labelId);
-				return setNoteDtoFromNote(commonNote, user);
+				return noteDto;
 			} catch (Exception ex) {
 				log.error(NoteUtils.LABEL_DELETE_ERROR, labelId, new LabelNotDeletedException(ex.getMessage()));
 				throw new LabelNotDeletedException(ex.getMessage());
@@ -345,19 +343,23 @@ public class NoteService {
 		}
 	}
 
+	public NoteDto saveNoteAndReturnDto(User user, SpecificNote note) {
+		try {
+			SpecificNote specificNote = specificNoteRepository.save(note);
+			Note commonNote = specificNote.getCommonNote();
+			log.info(NoteUtils.NOTE_UPDATE_SUCCESS);
+			return setNoteDtoFromNote(commonNote, user);
+		} catch (Exception ex) {
+			log.error(NoteUtils.NOTE_UPDATE_ERROR, new NoteNotUpdatedException(ex.getMessage()));
+			throw new NoteNotUpdatedException(ex.getMessage());
+		}
+	}
+
 	public NoteDto updateColorOfNote(User user, ColorUpdateDto colorDto) {
-		SpecificNote note = specificNoteRepository.findById(colorDto.getNoteId());
+		SpecificNote note = specificNoteRepository.findById(colorDto.getNoteId()).get();
 		if (note != null) {
-			try {
-				note.setColor(colorDto.getColor());
-				Note updatedNote = note.getCommonNote();
-				Note savedNote = noteRepository.save(updatedNote);
-				log.info(NoteUtils.NOTE_UPDATE_SUCCESS, savedNote);
-				return setNoteDtoFromNote(savedNote, user);
-			} catch (Exception ex) {
-				log.error(NoteUtils.NOTE_UPDATE_ERROR, new NoteNotUpdatedException(ex.getMessage()));
-				throw new NoteNotUpdatedException(ex.getMessage());
-			}
+			note.setColor(colorDto.getColor());
+			return saveNoteAndReturnDto(user, note);
 		} else {
 			log.error(NoteUtils.NOTE_NOT_FOUND, colorDto.getNoteId(), new NoteNotFoundException());
 			throw new NoteNotFoundException();
@@ -365,20 +367,12 @@ public class NoteService {
 	}
 
 	public NoteDto pinNote(User user, Long noteId) {
-		SpecificNote note = specificNoteRepository.findById(noteId);
+		SpecificNote note = specificNoteRepository.findById(noteId).get();
 		if (note != null) {
-			try {
-				note.setArchived(false);
-				note.setTrashed(false);
-				note.setPinned(!note.isPinned());
-				Note updatedNote = note.getCommonNote();
-				Note savedNote = noteRepository.save(updatedNote);
-				log.info(NoteUtils.NOTE_UPDATE_SUCCESS, savedNote);
-				return setNoteDtoFromNote(savedNote, user);
-			} catch (Exception ex) {
-				log.error(NoteUtils.NOTE_UPDATE_ERROR, new NoteNotUpdatedException(ex.getMessage()));
-				throw new NoteNotUpdatedException(ex.getMessage());
-			}
+			note.setArchived(false);
+			note.setTrashed(false);
+			note.setPinned(!note.isPinned());
+			return saveNoteAndReturnDto(user, note);
 		} else {
 			log.error(NoteUtils.NOTE_NOT_FOUND, noteId, new NoteNotFoundException());
 			throw new NoteNotFoundException();
@@ -386,20 +380,12 @@ public class NoteService {
 	}
 
 	public NoteDto archiveNote(User user, Long noteId) {
-		SpecificNote note = specificNoteRepository.findById(noteId);
+		SpecificNote note = specificNoteRepository.findById(noteId).get();
 		if (note != null) {
-			try {
-				note.setArchived(!note.isArchived());
-				note.setTrashed(false);
-				note.setPinned(false);
-				Note updatedNote = note.getCommonNote();
-				Note savedNote = noteRepository.save(updatedNote);
-				log.info(NoteUtils.NOTE_UPDATE_SUCCESS, savedNote);
-				return setNoteDtoFromNote(savedNote, user);
-			} catch (Exception ex) {
-				log.error(NoteUtils.NOTE_UPDATE_ERROR, new NoteNotUpdatedException(ex.getMessage()));
-				throw new NoteNotUpdatedException(ex.getMessage());
-			}
+			note.setArchived(!note.isArchived());
+			note.setTrashed(false);
+			note.setPinned(false);
+			return saveNoteAndReturnDto(user, note);
 		} else {
 			log.error(NoteUtils.NOTE_NOT_FOUND, noteId, new NoteNotFoundException());
 			throw new NoteNotFoundException();
@@ -407,20 +393,12 @@ public class NoteService {
 	}
 
 	public NoteDto trashNote(User user, Long noteId) {
-		SpecificNote note = specificNoteRepository.findById(noteId);
+		SpecificNote note = specificNoteRepository.findById(noteId).get();
 		if (note != null) {
-			try {
-				note.setArchived(false);
-				note.setTrashed(!note.isTrashed());
-				note.setPinned(false);
-				Note updatedNote = note.getCommonNote();
-				Note savedNote = noteRepository.save(updatedNote);
-				log.info(NoteUtils.NOTE_UPDATE_SUCCESS, savedNote);
-				return setNoteDtoFromNote(savedNote, user);
-			} catch (Exception ex) {
-				log.error(NoteUtils.NOTE_UPDATE_ERROR, new NoteNotUpdatedException(ex.getMessage()));
-				throw new NoteNotUpdatedException(ex.getMessage());
-			}
+			note.setArchived(false);
+			note.setTrashed(!note.isTrashed());
+			note.setPinned(false);
+			return saveNoteAndReturnDto(user, note);
 		} else {
 			log.error(NoteUtils.NOTE_NOT_FOUND, noteId, new NoteNotFoundException());
 			throw new NoteNotFoundException();
@@ -430,7 +408,7 @@ public class NoteService {
 	@Transactional
 	public boolean deleteNoteByUserAndId(User currentUser, Long noteId) {
 		User user = userRepository.findByEmail(currentUser.getEmail()).orElseThrow(() -> new UserNotFoundException());
-		SpecificNote note = specificNoteRepository.findById(noteId);
+		SpecificNote note = specificNoteRepository.findById(noteId).get();
 		if (note != null) {
 			try {
 				Note commonNote = note.getCommonNote();
@@ -688,6 +666,7 @@ public class NoteService {
 		specificNote.setPinned(noteDto.isPinned());
 		specificNote.setReminder(noteDto.getReminder());
 		specificNote.setTrashed(noteDto.isTrashed());
+		user.getSpecificNoteList().add(specificNote);
 		specificNote.setUser(user);
 		specificNote.setCommonNote(updatedNote);
 		SpecificNote savedSpecificNote = specificNoteRepository.save(specificNote);
@@ -701,7 +680,7 @@ public class NoteService {
 	}
 
 	public NoteDto getNoteById(User user, Long id) {
-		SpecificNote specificNote = specificNoteRepository.findById(id);
+		SpecificNote specificNote = specificNoteRepository.findById(id).get();
 		Note note = specificNote.getCommonNote();
 		NoteDto noteDto = setNoteDtoFromNote(note, user);
 		return noteDto;

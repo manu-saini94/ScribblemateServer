@@ -40,7 +40,7 @@ public class Note extends CommonFields {
 	@ElementCollection(fetch = FetchType.EAGER)
 	private List<String> images;
 
-	@ManyToMany(mappedBy = "noteList", fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToMany(mappedBy = "noteList", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private List<User> collaboratorList;
 
 	@OneToMany(mappedBy = "commonNote", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
