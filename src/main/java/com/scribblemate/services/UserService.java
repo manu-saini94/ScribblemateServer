@@ -137,15 +137,18 @@ public class UserService {
 		return userDto;
 	}
 
-
+	public CollaboratorDto getCollaboratorDtoFromUser(User user) {
+		CollaboratorDto collaboratorDto = new CollaboratorDto();
+		collaboratorDto.setEmail(user.getEmail());
+		collaboratorDto.setName(user.getFullName());
+		collaboratorDto.setId(user.getId());
+		return collaboratorDto;
+	}
 
 	public CollaboratorDto checkForUserExist(String email) {
 		User user = userRepository.findByEmail(email)
 				.orElseThrow(() -> new UserNotFoundException("User with this email does not exist"));
-		UserResponseDto userDto = getUserDtoFromUser(user);
-		CollaboratorDto collaboratorDto = new CollaboratorDto();
-		collaboratorDto.setEmail(userDto.getEmail());
-		collaboratorDto.setName(userDto.getFullName());
+		CollaboratorDto collaboratorDto = getCollaboratorDtoFromUser(user);
 		return collaboratorDto;
 	}
 

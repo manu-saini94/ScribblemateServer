@@ -666,7 +666,6 @@ public class NoteService {
 		specificNote.setPinned(noteDto.isPinned());
 		specificNote.setReminder(noteDto.getReminder());
 		specificNote.setTrashed(noteDto.isTrashed());
-		user.getSpecificNoteList().add(specificNote);
 		specificNote.setUser(user);
 		specificNote.setCommonNote(updatedNote);
 		SpecificNote savedSpecificNote = specificNoteRepository.save(specificNote);

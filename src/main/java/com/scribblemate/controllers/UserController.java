@@ -43,7 +43,7 @@ public class UserController {
 				.body(new SuccessResponse(HttpStatus.OK.value(), ResponseSuccessUtils.FETCH_ALL_USERS_SUCCESS, users));
 	}
 
-	@GetMapping("/email/exist/{email}")
+	@GetMapping("/exist/{email}")
 	public ResponseEntity<SuccessResponse> checkCollaboratorExist(@PathVariable String email,
 			HttpServletRequest httpRequest) {
 		User user = userService.getUserFromHttpRequest(httpRequest);
