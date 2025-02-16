@@ -24,9 +24,9 @@ import com.scribblemate.services.UserService;
 import com.scribblemate.utility.ResponseSuccessUtils;
 import jakarta.servlet.http.HttpServletRequest;
 
-@RequestMapping("/api/v1/note")
+@RequestMapping("${app.api.prefix}/note")
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
+@CrossOrigin(origins = "${allowed.origin}", allowedHeaders = "*", allowCredentials = "true")
 public class NoteController {
 
 	@Autowired
