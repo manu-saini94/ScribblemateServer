@@ -25,7 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping("/api/v1/label")
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
+@CrossOrigin(origins = "${allowed.origin}", allowedHeaders = "*", allowCredentials = "true")
 public class LabelController {
 
 	@Autowired

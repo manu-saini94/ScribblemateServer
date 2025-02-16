@@ -21,9 +21,9 @@ import com.scribblemate.utility.ResponseSuccessUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@RequestMapping("/api/v1/auth")
+@RequestMapping("${app.api.prefix}/auth")
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
+@CrossOrigin(origins = "${allowed.origin}", allowedHeaders = "*", allowCredentials = "true")
 public class AuthenticationController {
 
 	private final UserService userService;
