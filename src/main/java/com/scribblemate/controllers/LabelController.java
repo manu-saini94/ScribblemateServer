@@ -23,7 +23,7 @@ import com.scribblemate.utility.ResponseSuccessUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-@RequestMapping("/api/v1/label")
+@RequestMapping("${app.api.prefix}/label")
 @RestController
 @CrossOrigin(origins = "${allowed.origin}", allowedHeaders = "*", allowCredentials = "true")
 public class LabelController {
